@@ -1,7 +1,7 @@
 export const SEO = {
-  title: "Pea And Fry –  Braunschweig-Broitzem",
+  title: "Pizzeria Milano Segle –  Carrer del Segle XX, 9, Horta-Guinardó, 08041 Barcelona, Spain",
   description:
-    "Authentic food at Pea and fry , Braunschweig-Broitzem. Order online for delivery ",
+    "Authentic food at Pizzeria Milano Segle , Carrer del Segle XX, 9, Horta-Guinardó, 08041 Barcelona, Spain. Order online for delivery ",
 };
 
 
@@ -11,15 +11,15 @@ export const BRANDING = {
   offer_instruction: "",
   delivery_note: "Delivery is also available.",
   home_page_disclaimer:"",// "Food may differ from image.",
-  brand: "Pea And Fry",
+  brand: "Pizzeria Milano Segle",
   tag_line: "",
-  brand_name: "Pea And Fry ",
+  brand_name: "Pizzeria Milano Segle ",
    poweredBy: "Powered by",
     poweredByUrl: "http://www.gstadeveloper.com",
     copyright: {
       prefix: "Copyright ©",
       suffix: "All Rights Reserved by",
-      company: "Pea And Fry "
+      company: "Pizzeria Milano Segle "
     },
 
 
@@ -30,7 +30,7 @@ export const BRANDING = {
   copyright: {
     prefix: "Copyright ©",
     suffix: "All Rights Reserved by",
-    company: "Pea And Fry ",
+    company: "Pizzeria Milano Segle ",
   },
 },
 

@@ -64,7 +64,7 @@ export default function HeroSectionSpotlight() {
           >
             {/* Spice Up  
             <br /> */}
-             Pea And Fry
+             Pizzeria Milano Segle
           </h1>
 
           {/* Subtitle */}

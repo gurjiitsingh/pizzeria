@@ -7,7 +7,7 @@ import ContactInfo from "@/custom/cus-components/ContactInfo";
 import SlidersByCatId from "@/custom/cus-components/SlidersByCatId";
 
 
-import HeroSectionCustom from "@/custom/cus-components/HeroSectionCustom";
+import HeroSectionCustom from "@/custom/cus-components/HeroSectionCustom-6";
 
 import CategorySliderSm2 from "@/components/level-1/CategorySliderSm2";
 import Products from "@/components/level-1/Products";

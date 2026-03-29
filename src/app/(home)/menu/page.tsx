@@ -4,7 +4,7 @@
 //import CategorySlider from "@/components/level-1/CategorySlider";
 
 import { useLanguage } from "@/store/LanguageContext";
-import HeroSectionCustom from "@/custom/cus-components/HeroSectionCustom";
+import HeroSectionCustom from "@/custom/cus-components/HeroSectionCustom-6";
 import ProductMenuList from "@/components/level-1/ProductsMenuList";
 
 

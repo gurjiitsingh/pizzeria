@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: SEO.title,
     description: SEO.description,
-    url: "https://indozestfusioncafe.com",
+    url: "https://pizzeria.com",
     siteName: SEO.title,
     images: [
       {
