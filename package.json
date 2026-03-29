@@ -1,11 +1,11 @@
 {
-  "name": "feanfry",
+  "name": "pizzeria",
   "version": "0.6.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3019",
+    "start": "next start -p 3020",
     "lint": "next lint"
     
   },
