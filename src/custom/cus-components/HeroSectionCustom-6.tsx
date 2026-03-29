@@ -48,7 +48,7 @@ export default function HeroSectionLuxuryMinimal() {
         <h1
           className={`${chicle.className} text-5xl md:text-7xl text-white mb-6`}
         >
-          Agny Curry
+          Pizzeria Milano Segle
         </h1>
 
         {/* Divider */}

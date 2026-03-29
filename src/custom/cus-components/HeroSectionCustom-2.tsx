@@ -49,7 +49,7 @@ export default function HeroSectionCustom() {
               <h2
                 className={`${chicle.className} text-4xl md:text-6xl mb-3`}
               >
-                Agny Curry
+                Pizzeria Milano Segle
               </h2>
 
               {/* Subtitle */}

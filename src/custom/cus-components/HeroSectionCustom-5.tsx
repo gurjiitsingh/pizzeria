@@ -46,7 +46,7 @@ export default function HeroSectionEditorial() {
           <h1
             className={`${chicle.className} text-4xl md:text-6xl leading-tight mb-4`}
           >
-            Agny Curry
+            Pizzeria Milano Segle
           </h1>
 
           {/* Description */}

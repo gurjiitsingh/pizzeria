@@ -73,7 +73,7 @@ export default function HeroSectionCustom() {
             <h2
               className={`${chicle.className} text-4xl md:text-5xl my-3 text-[#ea9244] md:text-white`}
             >
-              Agny curry
+              Pizzeria Milano Segle
             </h2>
 
             {/* Features */}
