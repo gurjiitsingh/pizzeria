@@ -1,4 +1,8 @@
-"use client";
+ 
+  
+  export default CategorySliderSm2-0.1;
+  
+  "use client";
 
 import { useEffect, useState, useMemo } from "react";
 import Slider from "react-slick";

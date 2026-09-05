@@ -14,11 +14,12 @@ export type cartModifierItem = {
 export type cartProductType = {
   id: string; // selected product (variant or normal)
   uniqueKey?: string;
+  productMode?: string;
   price: number;
   basePrice?: number;
  
   quantity: number;
-  stockQty: number | null;
+  currentStock: number | null;
 
   categoryId: string;
   productCat: string;
@@ -42,7 +43,7 @@ export type cartProductType = {
 //   id: string ;
 //   price: number;
 //   quantity: number;
-//   stockQty: number | null;
+//   currentStock: number | null;
 //   categoryId: string;
 //   productCat: string;
 //   name: string;
@@ -65,7 +66,8 @@ export type CartItem = {
   name: string;
   price: number;
   quantity: number;
-  stockQty: number | null;
+  currentStock: number | null;
+  productMode?: string;
   // category + tax info copied from product
   categoryId: string;
   productCat: string;

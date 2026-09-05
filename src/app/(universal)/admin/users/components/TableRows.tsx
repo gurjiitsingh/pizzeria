@@ -3,14 +3,14 @@
 import { deleteUser } from "@/app/(universal)/action/user/dbOperation";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { userType } from "@/lib/types/userType";
 import { MdDeleteForever } from "react-icons/md";
 import { useLanguage } from "@/store/LanguageContext";
+import {   userDashboardType } from "@/lib/types/userDashboardType";
 
-function TableRows({ user }: { user: userType }) {
+function TableRows({ user }: { user: userDashboardType }) {
   const { TEXT } = useLanguage();
  
-  async function handleDelete(user: userType) {
+  async function handleDelete(user: userDashboardType) {
     const confirmDelete = confirm(
       TEXT?.confirm_delete_user ||
         "Do you want to delete this user?\nIf yes, click OK.\nIf not, click Cancel."
@@ -27,10 +27,14 @@ function TableRows({ user }: { user: userType }) {
   }
 
   return (
-    <TableRow className="whitespace-nowrap hover:bg-green-50 dark:hover:bg-zinc-800 transition rounded-xl">
-      <TableCell>{user.username}</TableCell>
+    <TableRow className="whitespace-nowrap hover:bg-green-50 dark:hover:bg-zinc-100 transition rounded-xl">
+      <TableCell>{user.fullName}</TableCell>
+       <TableCell>{user.username}</TableCell>
       <TableCell>{user.email}</TableCell>
+       <TableCell>{user.mobile}</TableCell>  
       <TableCell>{user.role}</TableCell>
+         <TableCell>{user.department}</TableCell>
+         <TableCell>{user.createdAt}</TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-2">
           <Button
@@ -43,7 +47,7 @@ function TableRows({ user }: { user: userType }) {
           </Button>
         </div>
       </TableCell>
-      <TableCell>{user.time!}</TableCell>
+   
     </TableRow>
   );
 }

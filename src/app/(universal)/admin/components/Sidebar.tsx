@@ -16,6 +16,10 @@ import {
   MdOutlineCrisisAlert,
   MdOutlineBackup,
   MdAccessTime,
+  MdOutlineInventory2,
+  MdOutlineReceiptLong,
+  MdOutlineRestaurant,
+  MdStorefront,
 } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { BsCardList } from "react-icons/bs";
@@ -35,6 +39,9 @@ type SidebarFlagKey =
   | "SHOW_CATEGORIES"
   | "SHOW_PICKUP_DISCOUNT"
   | "SHOW_PRODUCTS"
+  | "SHOW_INVENTORY_RAW"
+  | "SHOW_DISTRIBUTION"
+  | "SHOW_INVENTORY_FINISHED"
   | "SHOW_VARIANTS"
   | "SHOW_COUPON"
   | "SHOW_DELIVERY"
@@ -43,10 +50,15 @@ type SidebarFlagKey =
   | "SHOW_TIMMING"
   | "SHOW_SETTING"
   | "SHOW_DATA_BACKUP"
-  | "SHOW_OUTLET"   // ⭐ NEW
-   | "SHOW_TABLES" 
-   | "SHOW_MODIFIER"     
-  | "SHOW_MODIFIER_GROUPS"; 
+  | "SHOW_OUTLET"
+  | "SHOW_TABLES"
+  | "SHOW_MODIFIER"
+  | "SHOW_MODIFIER_GROUPS"
+  | "SHOW_INVENTORY"
+  | "SHOW_INVENTORY_TRANSACTIONS"
+  | "SHOW_PRODUCT_RECIPES"
+  | "SHOW_MAINTENANCE"
+  |  "SHOW_STORE_POS"; 
 
 type Titem = {
   key: SidebarFlagKey;
@@ -69,6 +81,9 @@ export const sidebarFlags: Record<SidebarFlagKey, boolean> = {
   SHOW_CATEGORIES: flag(process.env.NEXT_PUBLIC_SHOW_CATEGORIES),
   SHOW_PICKUP_DISCOUNT: flag(process.env.NEXT_PUBLIC_SHOW_PICKUP_DISCOUNT),
   SHOW_PRODUCTS: flag(process.env.NEXT_PUBLIC_SHOW_PRODUCTS),
+  SHOW_INVENTORY_RAW: flag(process.env.NEXT_PUBLIC_SHOW_RAW_INVENTORY),
+   SHOW_DISTRIBUTION: flag(process.env.NEXT_PUBLIC_SHOW_DISTRIBUTION),
+  SHOW_INVENTORY_FINISHED: flag(process.env.NEXT_PUBLIC_SHOW_FINISHED_INVENTORY), 
   SHOW_VARIANTS: flag(process.env.NEXT_PUBLIC_SHOW_VARIANTS),
   SHOW_COUPON: flag(process.env.NEXT_PUBLIC_SHOW_COUPON),
   SHOW_DELIVERY: flag(process.env.NEXT_PUBLIC_SHOW_DELIVERY),
@@ -82,9 +97,25 @@ export const sidebarFlags: Record<SidebarFlagKey, boolean> = {
   SHOW_TABLES: flag(process.env.NEXT_PUBLIC_SHOW_TABLES),
     SHOW_MODIFIER: flag(process.env.NEXT_PUBLIC_SHOW_MODIFIER),             
   SHOW_MODIFIER_GROUPS: flag(process.env.NEXT_PUBLIC_SHOW_MODIFIER_GROUPS),
+  SHOW_INVENTORY: flag(process.env.NEXT_PUBLIC_SHOW_INVENTORY),
+
+    SHOW_STORE_POS: flag(process.env.NEXT_PUBLIC_SHOW_STORE_POS),
+
+SHOW_INVENTORY_TRANSACTIONS: flag(
+  process.env.NEXT_PUBLIC_SHOW_INVENTORY_TRANSACTIONS
+),
+
+SHOW_PRODUCT_RECIPES: flag(
+  process.env.NEXT_PUBLIC_SHOW_PRODUCT_RECIPES
+),
+  SHOW_MAINTENANCE: flag(
+    process.env.NEXT_PUBLIC_SHOW_MAINTENANCE
+  ),
 };
 
-const Sidebar = () => {
+
+
+const Sidebar = () => { 
   const { BRANDING } = useLanguage() || {
     BRANDING: {
       sidebar: {
@@ -97,9 +128,12 @@ const Sidebar = () => {
         pickup_discount: "Pickup Discount",
         products: "Products",
         variants: "Variants",
+
+
+        
         coupon: "Coupon",
         delivery: "Delivery",
-        users: "Users",
+        users: "Employees",
         dayschedule: "Opening Timing",
         setting: "Setting",
         data_backup: "Data Backup",
@@ -121,6 +155,37 @@ const Sidebar = () => {
     },
     { key: "SHOW_CATEGORIES", name: BRANDING.sidebar.categories, link: "/admin/categories", icon: <MdCategory /> },
     { key: "SHOW_PRODUCTS", name: BRANDING.sidebar.products, link: "/admin/products", icon: <MdInventory /> },
+
+   {
+  key: "SHOW_STORE_POS",
+  name: "Store & POS",
+  link: "/admin/store-pos",
+  icon: <MdStorefront />,
+},
+{
+  key: "SHOW_INVENTORY_RAW",
+  name: "Products Stock",
+  link: "/admin/stock-finished/sale/add",
+  icon: <MdInventory />,
+},
+    {
+  key: "SHOW_INVENTORY_RAW",
+  name: "Raw Stock",
+  link: "/admin/inventory",
+  icon: <MdOutlineInventory2 />,
+},
+ {
+  key: "SHOW_DISTRIBUTION",
+  name: "Distribution",
+  link: "/admin/distribution/load-operator",
+  icon: <MdInventory />,
+},
+{
+  key: "SHOW_MAINTENANCE",
+  name: "Maintenance",
+  link: "/admin/maintenance/faults",
+  icon: <MdOutlineCrisisAlert />,
+},
 
       {
     key: "SHOW_MODIFIER_GROUPS",
@@ -147,13 +212,57 @@ const Sidebar = () => {
 
     { key: "SHOW_VARIANTS", name: BRANDING.sidebar.variants, link: "/admin/flavorsProductG", icon: <MdRestaurantMenu /> },
 
+
+   
+
+
+// {
+//   key: "SHOW_INVENTORY_TRANSACTIONS",
+//   name: "Stock Transactions",
+//   link: "/admin/stock-finished/transactions",
+//   icon: <MdOutlineReceiptLong />,
+// },
+
+// {
+//   key: "SHOW_INVENTORY_TRANSACTIONS",
+//   name: "Add Transaction",
+//   link: "/admin/stock-finished/transactions/new",
+//   icon: <MdOutlineReceiptLong />,
+// },
+
+
+// {
+//   key: "SHOW_PRODUCT_RECIPES",
+//   name: "Product Recipes",
+//   link: "/admin/product-recipes/recipes",
+//   icon: <MdOutlineRestaurant />,
+// },
+
+// {
+//   key: "SHOW_PRODUCT_RECIPES",
+//   name: "Product Formula",
+//   link: "/admin/product-recipes/product-formula",
+//   icon: <MdOutlineRestaurant />,
+// },
+
+
+
+
+// {
+//   key: "SHOW_PRODUCT_RECIPES",
+//   name: "Add Recipe",
+//   link: "/admin/product-recipes/new",
+//   icon: <MdRestaurantMenu />,
+// },   
+   
+   
     { key: "SHOW_COUPON", name: BRANDING.sidebar.coupon, link: "/admin/coupon", icon: <MdLocalOffer /> },
 
     { key: "SHOW_DELIVERY", name: BRANDING.sidebar.delivery, link: "/admin/delivery", icon: <TbTruckDelivery /> },
 
     { key: "SHOW_LOCATIONS", name: "Locations", link: "/admin/locations", icon: <TbTruckDelivery /> },
 
-    { key: "SHOW_USERS", name: BRANDING.sidebar.users, link: "/admin/users", icon: <FaUsers /> },
+    { key: "SHOW_USERS", name: "Employee", link: "/admin/users", icon: <FaUsers /> },
 
     { key: "SHOW_TIMMING", name: "Opening Timing", link: "/admin/day-schedule/form", icon: <MdAccessTime /> },
 
@@ -173,6 +282,8 @@ const Sidebar = () => {
     { key: "SHOW_SETTING", name: BRANDING.sidebar.setting, link: "/admin/setting", icon: <MdSettings /> },
 
     { key: "SHOW_DATA_BACKUP", name: BRANDING.sidebar.data_backup, link: "/admin/data-backup", icon: <MdOutlineBackup /> },
+
+    
   ];
 
   const filteredMenu = menuList.filter((item) => sidebarFlags[item.key]);
@@ -190,8 +301,16 @@ const Sidebar = () => {
         </button>
       </div>
 
-      <div className="pt-6 h-screen w-[260px] flex flex-col justify-between px-3 py-6 sb-bg shadow-md">
-        <ul className="flex flex-col gap-1">
+    <div className="
+  pt-6
+  min-h-[100dvh]
+  overflow-y-auto
+  w-[260px]
+  flex flex-col justify-between
+  px-3 py-6
+  sb-bg shadow-md
+  bg-slate-800
+">    <ul className="flex flex-col gap-1">
           {filteredMenu.map((item) => (
             <Tab key={item.link} item={item} />
           ))}
@@ -206,7 +325,7 @@ const Sidebar = () => {
 
 <button
   onClick={() => signOut({ callbackUrl: "/auth/login" })}
-  className="flex items-center gap-3 px-4 py-2 w-full text-sm font-medium rounded-md bg-amber-600 text-white hover:bg-rose-700 transition"
+  className="flex items-center gap-3 mb-10 px-4 mb-10 py-2 w-full text-sm font-medium rounded-md bg-amber-600 text-white hover:bg-rose-700 transition"
 >
   <IoIosLogOut size={20} />
   {BRANDING.sidebar.logout}

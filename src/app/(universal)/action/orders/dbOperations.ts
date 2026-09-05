@@ -30,6 +30,20 @@ type FetchOrdersOptions = {
   pageSize?: number;
 };
 
+
+const SHOULD_MAINTAIN_STOCK =
+  process.env.NEXT_PUBLIC_MAINTAIN_STOCK === "true" ||
+  process.env.NEXT_PUBLIC_MAINTAIN_STOCK === "1";
+
+import { calculateTaxForCart } from "@/lib/tax/calculateTaxForCart-withRounding";
+import { calculateOrderTotals } from "@/lib/orderAmount/calculateOrderTotals";
+import { toTimestamp } from "@/utils/toTimestamp";
+import { toAdminTimestamp } from "@/utils/toAdminTimestamp";
+import { processSaleInventory } from "../inventory/processSaleInventory";
+import { checkStockAvailabilityV2 } from "../inventory/checkStockAvailabilityV2";
+
+
+
 export async function createNewOrderCustomerAddress(
   purchaseData: purchaseDataT
 ) {
@@ -113,386 +127,9 @@ export async function createNewOrderCustomerAddressSMALL(
   return { addressAddedId, UserAddedId, customerName };
 }
 
-const SHOULD_MAINTAIN_STOCK =
-  process.env.NEXT_PUBLIC_MAINTAIN_STOCK === "true" ||
-  process.env.NEXT_PUBLIC_MAINTAIN_STOCK === "1";
-
-import { calculateTaxForCart } from "@/lib/tax/calculateTaxForCart-withRounding";
-import { calculateOrderTotals } from "@/lib/orderAmount/calculateOrderTotals";
-import { toTimestamp } from "@/utils/toTimestamp";
-import { toAdminTimestamp } from "@/utils/toAdminTimestamp";
-
-export async function createNewOrder(purchaseData: orderDataType) {
-
-  console.log("addreas full oredr masrer---------------",purchaseData)
-  const {
-    // -----------------------------
-    // BASIC
-    // -----------------------------
-    userId,
-    customerName,
-    customerPhone,        //  NEW
-    email,
-
-    orderType,
-    tableNo,
-    addressId,
-
-    // -----------------------------
-    // DELIVERY ADDRESS (FLAT)
-    // -----------------------------
-    deliveryAddressLine1, //  NEW
-    deliveryAddressLine2, //  NEW
-    deliveryCity,         //  NEW
-    deliveryState,        //  NEW
-    deliveryZipcode,      //  NEW
-
-    // -----------------------------
-    // PAYMENT
-    // -----------------------------
-    paymentType,
-
-    // -----------------------------
-    // PRICING INPUTS
-    // -----------------------------
-    itemTotal,            // before tax & discount
-    deliveryFee,
-
-    // -----------------------------
-    // DISCOUNTS (LEGACY + CLEAN)
-    // -----------------------------
-    couponFlat,
-    calcouponPercent,
-    calculatedPickUpDiscountL,
-    couponCode,
-    couponPercentPercentL,
-    pickUpDiscountPercentL,
-    totalDiscountG,
-
-    // -----------------------------
-    // FLAGS / META
-    // -----------------------------
-    noOffers,
-    cartData,             // cartProductType[]
-    source,
-
-    // -----------------------------
-    // SCHEDULING
-    // -----------------------------
-    scheduledAt,
-    isScheduled,          //  NEW
-  } = purchaseData;
-
-  // 🔒 Normalize userId (defensive programming)
-  // const safeUserId =
-  //   typeof userId === "string"
-  //     ? userId.replace(/^"+|"+$/g, "")
-  //     : userId;
-
-  // =====================================================
-  // 1️⃣ STOCK CHECK (BEFORE ANY CALCULATION)
-  // =====================================================
-  if (SHOULD_MAINTAIN_STOCK) {
-    const stockCheck = await checkStockAvailability(cartData);
-    if (!stockCheck.success) {
-      return { success: false, message: stockCheck.message };
-    }
-  }
-
-  // =====================================================
-  // 2️⃣ TAX CALCULATION (SERVER = SOURCE OF TRUTH)
-  // =====================================================
-  // cartData is already cartProductType[]
-  const { products: cartWithTax, totalTax } = await calculateTaxForCart(
-    cartData
-  );
-
-  // =====================================================
-  // 3️⃣ TOTALS CALCULATION (SERVER = SOURCE OF TRUTH)
-  // =====================================================
-  const totals = calculateOrderTotals({
-    itemTotal,
-    couponFlat,
-    couponPercent: calcouponPercent,
-    pickupDiscount: calculatedPickUpDiscountL,
-    taxBeforeDiscount: totalTax,
-    deliveryFee: deliveryFee,
-  });
-
-  // =====================================================
-  // 4️⃣ TIMESTAMPS
-  // =====================================================
-  const nowUTC = new Date().toISOString();
-
-  const nowGerman = new Date().toLocaleString("en-DE", {
-    dateStyle: "medium",
-    timeStyle: "medium",
-    timeZone: "Europe/Berlin",
-  });
-
-  const timeNow = new Date().toLocaleString("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "medium",
-    timeZone: "Asia/Kolkata",
-  });
-
-  // =====================================================
-  // 5️⃣ GENERATE SERIAL NUMBER (srno)
-  // =====================================================
-  const collectionRef = adminDb.collection("orderMaster");
-  const snapshot = await collectionRef.orderBy("srno", "desc").limit(1).get();
-
-  let new_srno = 1;
-  if (!snapshot.empty) {
-    const latest = snapshot.docs[0].data() as orderMasterDataT;
-    new_srno = (latest?.srno || 0) + 1;
-  }
-
-  // =====================================================
-  // 6️⃣ ORDER STATUS
-  // =====================================================
-  //   const orderStatus = paymentType === "CASH" ? "COMPLETED" : "NEW";
-
-  //cosnt orderStatus= scheduledTimestamp ? "SCHEDULED" : "NEW";
-
-  const paymentStatus = paymentType === "COD" ? "PAID" : "NEW";
-
-  // =====================================================
-  // 7️⃣ ORDER MASTER DATA (CLEAN + LEGACY)
-  // =====================================================
-  const scheduledTimestamp = toAdminTimestamp(scheduledAt);
-
-  if (scheduledTimestamp && scheduledTimestamp.toMillis() < Date.now()) {
-    return {
-      success: false,
-      message: "Scheduled time is in the past",
-    };
-  }
-
-  const MIN_BUFFER_MS = 30 * 60 * 1000;
-
-  if (
-    scheduledTimestamp &&
-    scheduledTimestamp.toMillis() < Date.now() + MIN_BUFFER_MS
-  ) {
-    return {
-      success: false,
-      message: "Please select a time at least 15 minutes from now",
-    };
-  }
 
 
-const orderMasterData: orderMasterDataT = {
-  // =====================================================
-  // BASIC
-  // =====================================================
-  id: "temp_id",
- srno: new_srno,
 
-  customerId: userId,
-  customerName,
-  email,
-
-  customerPhone: customerPhone || "",
-  customerCountryCode: "+91", //  default
-
-  addressId,
-
-  // ---------- Delivery Address Snapshot (FLAT) ----------
-  dAddressLine1: deliveryAddressLine1 || "",
-  dAddressLine2: deliveryAddressLine2 || "",
-  dCity: deliveryCity || "Jalandhar",
-  dState: deliveryState || "Punjab",
-  dZipcode: deliveryZipcode || "",
-  dLandmark: "", //  optional default
-
-  tableNo,
-  orderType,
-  paymentMode:"CASH",
-
-  ownerId: "temp_OW_ID",     // 🔑 Restaurant owner
-  outletId: "temp_Oulet_ID", // 🔑 Outlet / Branch
-
-  // =====================================================
-  // LEGACY TOTALS (DO NOT TOUCH)
-  // =====================================================
-  itemTotal,
-  deliveryFee: deliveryFee,
-  //totalDiscountG,
-  
-  pickUpDiscount:calculatedPickUpDiscountL,
-  couponPercent:calcouponPercent?calcouponPercent:couponFlat,
-  couponCode,
-  //couponPercentPercentL,
-  //pickUpDiscountPercentL,
-
-  // =====================================================
-  // TAX
-  // =====================================================
-  taxBeforeDiscount: totals.taxBeforeDiscount,
-  taxTotal: totals.taxTotal,
-
-  // =====================================================
-  // TOTALS (FINAL)
-  // =====================================================
-  productsCount: cartData.length,
-  discountTotal: totals.discountTotal,
-  subTotal: totals.subTotal,
-  grandTotal: totals.grandTotal,
-
-  // =====================================================
-  // PAYMENT (DEFAULTS ADDED)
-  // =====================================================
-  paymentStatus: "PAID",
-  paymentProvider: "CASH", //  safe default (STRIPE / PAYPAL later)
-  paymentMethod: "CASH",   //  VISA / GPAY later
-
-  // =====================================================
-  // ORDER STATE
-  // =====================================================
-  orderStatus: scheduledTimestamp ? "SCHEDULED" : "NEW",
-
-  // =====================================================
-  // SOURCE & META
-  // =====================================================
-  source,
-  staffId: null, //  POS only
-  notes: "",     //  optional
-
-  // =====================================================
-  // SYNC / OFFLINE (POS SAFE)
-  // =====================================================
-  syncStatus: "SYNCED", //  default
-  lastSyncedAt: admin.firestore.FieldValue.serverTimestamp(),
-
-  // =====================================================
-  // AUTOMATION
-  // =====================================================
-  printed: false,
-  acknowledged: false,
-
-  // =====================================================
-  // TIMESTAMPS
-  // =====================================================
-  createdAt: admin.firestore.FieldValue.serverTimestamp(),
-  updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-
-  // =====================================================
-  // SCHEDULING
-  // =====================================================
-  scheduledAt: scheduledTimestamp,
-  isScheduled: Boolean(scheduledTimestamp),
-
-  // =====================================================
-  // ARCHIVAL (SAFE DEFAULTS)
-  // =====================================================
-  // isArchived: false,
-  // archivedAt: null,
-};
-
-
-  //console.log("data to be saved server --------------", orderMasterData);
-
-  // =====================================================
-  // 8️⃣ SAVE ORDER MASTER
-  // =====================================================
-  const orderMasterId = await addOrderToMaster(orderMasterData);
-
-  // =====================================================
-  // 9️⃣ SAVE ORDER PRODUCTS (WITH TAX SNAPSHOT)
-  // =====================================================
-  for (const product of cartWithTax) {
-    await addProductDraft(product, userId!, orderMasterId!);
-  }
-
-  // =====================================================
-  // 🔟 MARKETING DATA
-  // =====================================================
-  await marketingData({
-    name: customerName,
-    userId,
-    addressId,
-    email,
-    noOfferEmails: noOffers,
-  });
-
-  // =====================================================
-  // 1️⃣1️⃣ EMAIL UNSUBSCRIBE (OPTIONAL)
-  // =====================================================
-  if (noOffers) {
-    const normalizedEmail = email.toLowerCase();
-    const ref = adminDb.collection("campaignEmailListFinal");
-    const existing = await ref.where("email", "==", normalizedEmail).get();
-
-    if (!existing.empty) {
-      await existing.docs[0].ref.update({
-        unsubscribed: true,
-        source: "app",
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    } else {
-      await ref.add({
-        email: normalizedEmail,
-        unsubscribed: true,
-        source: "app",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    }
-  }
-
-  // =====================================================
-  //  DONE
-  // =====================================================
-  return {
-    success: true,
-    message: "Order created",
-    orderId: orderMasterId,
-  };
-}
-
-/**
- * Save or update customer info in Firestore
- * @param name - Customer's full name
- * @param userId - Unique customer ID
- * @param email - Customer email address
- * @param marketingConsent - Boolean (true if allowed to send marketing)
- */
-
-export async function marketingData({
-  name,
-  userId,
-  addressId,
-  email,
-  noOfferEmails,
-}: {
-  name: string;
-  userId: string | undefined;
-  addressId: string;
-  email: string;
-  noOfferEmails: boolean;
-}) {
-  // Get current German time
-  // const now = new Date();
-  // const germanDateStr = now.toLocaleString("en-DE", {
-  //   timeZone: "Europe/Berlin",
-  // });
-  // const germanDate = new Date(germanDateStr);
-
-  const docRef = adminDb.collection("customerRecentOrder").doc(userId!);
-
-  await docRef.set(
-    {
-      name,
-      email,
-      userId,
-      addressId,
-      noOfferEmails,
-      lastOrderDate: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    },
-    { merge: true }
-  );
-}
 
 export async function updateOrderMaster(id: string, status: string) {
   try {
@@ -505,46 +142,9 @@ export async function updateOrderMaster(id: string, status: string) {
   }
 }
 
-export async function addProductDraft(
-  element: CartItemWithTax,
-  userAddedId: string,
-  orderMasterId: string
-) {
-  const product = {
-    prodcutId: element.id,
-    name: element.name,
-    price: element.price,
-    quantity: element.quantity,
-    itemSubtotal: element.itemSubtotal,
-    orderMasterId,
-    userId: userAddedId,
-    taxAmount: element.taxAmount, // per one item
-    taxTotal: element.taxTotal, // tax * quantity
-    finalPrice: element.finalPrice, // price + tax
-    finalTotal: element.finalTotal, // finalPrice * quantity
 
-    note: element.note || "",
-    modifiers: element.modifiers || [],
-  };
 
-  try {
-    const docRef = await adminDb.collection("orderProducts").add(product);
-    console.log("Purchased product document written with ID: ", docRef.id);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-}
 
-export async function addOrderToMaster(element: orderMasterDataT) {
-  // console.log("element-----------", element);
-  try {
-    const docRef = await adminDb.collection("orderMaster").add(element);
-    return docRef.id;
-  } catch (e) {
-    console.error("Error adding document: ", e);
-    return null;
-  }
-}
 
 export async function fetchOrdersPaginated({
   afterId,
@@ -832,7 +432,7 @@ Fetches each product individually.
 
 Checks for insufficient stock before decrementing.
 
-Also updates product status → "out_of_stock" when stockQty = 0.
+Also updates product status → "out_of_stock" when currentStock = 0.
 
 Returns detailed error messages per product.
 
@@ -882,7 +482,7 @@ export async function decreaseProductStock(orderMasterId: string) {
       }
 
       const product = productSnap.data() as ProductType;
-      const currentStock = product.stockQty ?? 0;
+      const currentStock = product.currentStock ?? 0;
       const quantityOrdered = item.quantity ?? 0;
 
       //  Check stock
@@ -895,7 +495,7 @@ export async function decreaseProductStock(orderMasterId: string) {
 
       //  Add to batch
       batch.update(productRef, {
-        stockQty: newStock,
+        currentStock: newStock,
         status: newStock === 0 ? "out_of_stock" : product.stockStatus,
       });
     }
@@ -985,11 +585,11 @@ export async function decreaseProductStockFromOrder(orderMasterId: string) {
       }
 
       const productData = productSnap.data();
-      const currentStock = productData?.stockQty ?? 0;
+      const currentStock = productData?.currentStock ?? 0;
       const newStock = Math.max(currentStock - orderQty, 0);
 
       batch.update(productRef, {
-        stockQty: newStock,
+        currentStock: newStock,
         status:
           newStock === 0 ? "out_of_stock" : productData?.orderStatus ?? "published",
       });

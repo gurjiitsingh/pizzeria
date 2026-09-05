@@ -19,6 +19,11 @@ export async function fetchCategories(): Promise<categoryType[]> {
     return {
       id: doc.id,
       name: data.name,
+       masterCategoryId:
+            data.masterCategoryId ?? "",
+
+          masterCategoryName:
+            data.masterCategoryName ?? "",
       desc: data.desc,
       productDesc: data.productDesc,
       slug: data.slug,
@@ -71,10 +76,23 @@ export async function addNewCategory(formData: FormData) {
    const taxRateRaw = formData.get("taxRate") as string ;
     const taxType = formData.get("taxType") as string ;
      const taxRate = taxRateRaw ? parseFloat(taxRateRaw) : null;
-
-  const receivedData = { name, desc, sortOrder, image, isFeatured };
+const masterCategoryId =
+  formData.get("masterCategoryId") as string | null;
+  const receivedData = { name, desc, sortOrder, image, isFeatured, masterCategoryId };
 
   const result = categorySchema.safeParse(receivedData);
+
+  let masterCategoryName = "";
+
+if (masterCategoryId) {
+  const masterCategoryDoc = await adminDb
+    .collection("masterCategories")
+    .doc(masterCategoryId)
+    .get();
+
+  masterCategoryName =
+    masterCategoryDoc.data()?.name || "";
+}
   let zodErrors = {};
   if (!result.success) {
     result.error.issues.forEach((issue) => {
@@ -95,7 +113,9 @@ export async function addNewCategory(formData: FormData) {
     }
   }
 
-  const data = { name, desc, sortOrder, image: imageUrl, isFeatured, taxRate, taxType };
+  const data = { name, desc, sortOrder, image: imageUrl, isFeatured, taxRate, taxType,  masterCategoryId,
+  masterCategoryName,
+ };
  
 
   try {
@@ -114,108 +134,6 @@ export async function addNewCategory(formData: FormData) {
 
 
 
-export async function editCategory(formData: FormData) {
-  console.log("form---------------",formData)
-  const id = formData.get("id") as string;
-  const image = formData.get("image");
-  const name = formData.get("name");
-  const desc = formData.get("desc");
-  const oldImageUrl = formData.get("oldImageUrl") as string;
-  const isFeatured = formData.get("isFeatured");
-  const sortOrder = formData.get("sortOrder");
-
-  const taxRateRaw = formData.get("taxRate") as string | null;
-  const taxType = (formData.get("taxType") as string ) ?? null;
-  //  Convert taxRate safely
-  const taxRate = taxRateRaw ? parseFloat(taxRateRaw) || null : null;
-  const receivedData = {
-    id,
-    oldImageUrl,
-    name,
-    desc,
-    sortOrder,
-    image,
-    isFeatured,
-    // taxRate, 
-    // taxType
-  };
-
-  const result = editCategorySchema.safeParse(receivedData);
-  let zodErrors = {};
-  if (!result.success) {
-    result.error.issues.forEach((issue) => {
-      zodErrors = { ...zodErrors, [issue.path[0]]: issue.message };
-    });
-    return { errors: zodErrors };
-  }
-
-  let imageUrl;
-  // if (image === "undefined" || image === null) {
-  //   imageUrl = oldImageUrl;
-  // } else {
-  //   try {
-  //     imageUrl = (await upload(image)) as string;
-  //   } catch (error) {
-  //     console.log(error);
-  //     return { errors: "Image cannot be uploaded" };
-  //   }
-  // }
-
-
- if (image && image !== "undefined") {
-    try {
-      //  Upload new image
-      imageUrl = await upload(image);
-
-      //  Delete old Cloudinary image (skip if default image)
-      if (oldImageUrl && !oldImageUrl.includes("/com.jpg")) {
-        const oldParts = oldImageUrl.split("/");
-        const publicId = oldParts.slice(-2).join("/").split(".")[0];
-        // ex: anjana-bhog/xyz123
-
-        try {
-          await deleteImage(publicId);
-          console.log(" Old Cloudinary image deleted:", publicId);
-        } catch (err) {
-          console.error("❌ Failed to delete old image:", err);
-        }
-      }
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      return { errors: "Image could not be uploaded" };
-    }
-  } else {
-    //  Keep old image if no new image uploaded
-   // imageUrl = existingProduct?.image || oldImageUrl;
-     imageUrl = oldImageUrl;
-  }
-
-
-
-
-
-  const categoryUpdateData = {
-    name,
-    desc,
-    sortOrder,
-    image: imageUrl,
-    isFeatured,
-     taxRate, 
-    taxType
-  };
-
-  try {
-    await adminDb.collection("category").doc(id).set(categoryUpdateData);
-
-    //  REVALIDATE TAG SO /api/categories UPDATES IMMEDIATELY
-     revalidateTag("categories", "max");
-
-    return { message: { success: "Category updated" } };
-  } catch (error) {
-    console.log("error", error);
-    return { errors: "Cannot update" };
-  }
-}
 
 
 export async function fetchCategoryById(id: string): Promise<categoryType> {

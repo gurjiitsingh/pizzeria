@@ -9,9 +9,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchCategories } from "@/app/(universal)/action/category/dbOperations";
 import { categoryType } from "@/lib/types/categoryType";
 import {
-  editProduct,
+   
   fetchProductById,
 } from "@/app/(universal)/action/products/dbOperation";
+import { editProduct } from "@/app/(universal)/action/products/editProduct";
 
 const EditProduct = () => {
   const [categoryData, setCategoryData] = useState<categoryType[]>([]);
@@ -43,7 +44,7 @@ const EditProduct = () => {
       setValue("oldImageUrl", data.image);
       setValue("price", data.price?.toString() ?? "0");
       setValue("discountPrice", data.discountPrice?.toString() ?? "0");
-      setValue("stockQty", data.stockQty?.toString() ?? "0");
+      setValue("currentStock", data.currentStock?.toString() ?? "0");
       setValue("publishStatus",data.publishStatus ?? "published");
       setValue("sortOrder", data.sortOrder?.toString() ?? "0");
       setValue("categoryId", data.categoryId);
@@ -73,7 +74,7 @@ const EditProduct = () => {
     formData.append("type", "variant");
     formData.append("price", data.price);
     formData.append("discountPrice", data.discountPrice ?? "0.00");
-    formData.append("stockQty", data.stockQty ?? "-1");
+    formData.append("currentStock", data.currentStock ?? "-1");
     formData.append("categoryId", data.categoryId!);
     formData.append("sortOrder", data.sortOrder);
     formData.append("productDesc", data.productDesc ?? "");
@@ -87,7 +88,7 @@ const EditProduct = () => {
 
      formData.append("type", "variant");
 
-    if (data.image && data.image[0]) {
+    if (data.image && data.image[0]) { 
       formData.append("image", data.image[0]);
     }
 
@@ -198,7 +199,7 @@ const EditProduct = () => {
             <div>
               <label className="label-style">Stock Quantity</label>
               <input
-                {...register("stockQty")}
+                {...register("currentStock")}
                 className="input-style py-1"
                 placeholder="Enter stock quantity"
                 onFocus={(e) => {
@@ -206,7 +207,7 @@ const EditProduct = () => {
                 }}
               />
               <p className="text-xs text-destructive">
-                {errors.stockQty?.message}
+                {errors.currentStock?.message}
               </p>
             </div>
           </div>

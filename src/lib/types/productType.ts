@@ -1,23 +1,25 @@
 import { z } from "zod";
 
 export type ProductType = {
-  id: string ;
+  id: string;
   name: string;
   price: number;
-  stockQty: number;
+  quantity: number | null;
   discountPrice: number | undefined;
   categoryId: string;
+  masterCategoryId?: string;
+  masterCategoryName?: string;
   productCat: string | undefined;
   baseProductId: string;
   productDesc: string;
   sortOrder: number;
   image: string;
   isFeatured: boolean;
-  purchaseSession: string | null;
-  quantity: number | null;
-  flavors: boolean;
+favorite:boolean;
+  flavors?: boolean;
   publishStatus: 'published' | 'draft';
   stockStatus: 'in_stock' | 'out_of_stock';
+
 
   searchCode?: string | null;   // barcode / short code / SKU (nullable)
   // NEW FIELDS
@@ -28,7 +30,27 @@ export type ProductType = {
   hasVariants?: boolean;
   hasModifier?: boolean;
   type?: 'parent' | 'variant';
+
+  purchaseSession: string | null;
+
+
+  // NEW STOCK MAINTAIN
+  productMode?:
+  | "raw_stock"
+  | "finished_stock"
+  | "simple";
+
+  sku?: string;
+  barcode?: string;
+  currentStock?: number;
+  minStock?: number;      // alert level
+
+  // FOR SIMPLE PRODUCTS ONLY
+  inventoryItemId?: string;
+  trackInventory?: boolean;
+  allowNegativeStock?: boolean;
 };
+
 
 
 
@@ -39,7 +61,7 @@ export const newProductSchema = z.object({
   parentId: z.string().optional(),
   hasVariants: z.boolean().optional(),
   type: z.enum(["parent", "variant"]).optional(),
-searchCode: z.string().max(50).optional(),
+  searchCode: z.string().max(50).optional(),
   // --------------------------
   // MANDATORY
   // --------------------------
@@ -62,14 +84,14 @@ searchCode: z.string().max(50).optional(),
     }, { message: "Invalid sort order" }),
 
   categoryId: z.string().min(1, { message: "Please select category" }),
-
+masterCategoryId: z.string().optional(),
   // --------------------------
   // ✅ NEW STATUS FIELDS (CLEAN)
   // --------------------------
 
   publishStatus: z
-  .enum(["published", "draft"])
-  .default("published"),
+    .enum(["published", "draft"])
+    .default("published"),
 
   stockStatus: z
     .enum(["in_stock", "out_of_stock"])
@@ -93,7 +115,7 @@ searchCode: z.string().max(50).optional(),
       { message: "Invalid discount price" }
     ),
 
-  stockQty: z
+  currentStock: z
     .union([z.string(), z.number()])
     .optional()
     .transform((val) =>
@@ -138,7 +160,8 @@ export const editProductSchema = z.object({
   parentId: z.string().optional(),
   hasVariants: z.boolean().optional(),
   type: z.enum(["parent", "variant"]).optional(),
-searchCode: z.string().max(50).optional(),
+  masterCategoryId: z.string().optional(),
+  searchCode: z.string().max(50).optional(),
   // --------------------------
   // REQUIRED
   // --------------------------
@@ -166,7 +189,7 @@ searchCode: z.string().max(50).optional(),
       "Invalid discount price"
     ),
 
-  stockQty: z
+  currentStock: z
     .string()
     .optional()
     .refine(
@@ -195,9 +218,9 @@ searchCode: z.string().max(50).optional(),
   // ✅ NEW STATUS FIELDS (CLEAN)
   // --------------------------
 
-publishStatus: z
-  .enum(["published", "draft"])
-  .default("published"),
+  publishStatus: z
+    .enum(["published", "draft"])
+    .default("published"),
 
   stockStatus: z
     .enum(["in_stock", "out_of_stock"])
@@ -228,4 +251,4 @@ export type TeditProductSchema = z.infer<typeof editProductSchema>;
 
 
 
- 
+

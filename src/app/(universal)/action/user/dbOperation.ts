@@ -5,58 +5,68 @@ import { adminDb } from "@/lib/firebaseAdmin";
 import { TuserSchem, userType } from "@/lib/types/userType";
 import { FieldValue } from "firebase-admin/firestore";
 import admin from 'firebase-admin';
+
+
 /**
  * Add a new user if email isn't already in use.
- * Returns the new or existing user ID.
+ * Returns the user UID.
  */
-export async function addUserDirect(formData: FormData): Promise<string | undefined> {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const firstName = formData.get("firstName") as string;
-  const lastName = formData.get("lastName") as string;
-  let username = (formData.get("username") || undefined) as string | undefined;
+export async function addUserDirect(
+  formData: FormData
+): Promise<string | undefined> {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+  const firstName = String(formData.get("firstName") ?? "").trim();
+  const lastName = String(formData.get("lastName") ?? "").trim();
+  const role = String(formData.get("role") ?? "").trim();
 
-  const existing = await adminDb
-    .collection("user")
-    .where("email", "==", email)
-    .get();
+  let username = String(formData.get("username") ?? "").trim();
 
-  if (!existing.empty) {
-    return existing.docs[0].id;
-  }
-
-  username ??= `${firstName} ${lastName}`;
+  username ||= `${firstName} ${lastName}`.trim();
 
   try {
+    // Check if email already exists in Firestore
+    const existingUser = await adminDb
+      .collection("users")
+      .where("email", "==", email)
+      .limit(1)
+      .get();
+
+    if (!existingUser.empty) {
+      return existingUser.docs[0].id;
+    }
+
+    // Generate a Firestore document ID
+    const userRef = adminDb.collection("users").doc();
+
+    const uid = userRef.id;
+
+    // Hash password
     const hashedPassword = await hashPassword(password);
 
     const newUser = {
+      uid,
       username,
       firstName,
       lastName,
       email,
       hashedPassword,
-      role: "user",
+      role,
       isVerified: true,
       isAdmin: false,
-      time: new Intl.DateTimeFormat("de", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        hour12: false,
-        minute: "2-digit",
-      }).format(new Date()),
       createdAt: FieldValue.serverTimestamp(),
     };
 
-    const docRef = await adminDb.collection("user").add(newUser);
-    return docRef.id;
+    // Store user directly in Firestore
+    await userRef.set(newUser);
+
+    return uid;
   } catch (e) {
     console.error("Error adding user:", e);
     return undefined;
   }
 }
+
 
 
 export async function addUserDirectPrimaryMOB(
@@ -79,7 +89,7 @@ export async function addUserDirectPrimaryMOB(
  console.log("user data----",email,password,firstName,lastName,mobNo)
   // 🔍 1️⃣ Search existing user by mobile
   const existing = await adminDb
-    .collection("user")
+    .collection("users")
     .where("mobNo", "==", mobNo)
     .limit(1)
     .get();
@@ -115,7 +125,7 @@ export async function addUserDirectPrimaryMOB(
       createdAt: FieldValue.serverTimestamp(),
     };
 
-    const docRef = await adminDb.collection("user").add(newUser);
+    const docRef = await adminDb.collection("users").add(newUser);
 
     return docRef.id;
 
@@ -132,7 +142,7 @@ export async function searchUserById(id: string | undefined): Promise<TuserSchem
   let data = {} as TuserSchem;
   if (id) {
     const snapshot = await adminDb
-      .collection("user")
+      .collection("users")
       .where("userId", "==", id)
       .get();
 
@@ -148,7 +158,7 @@ export async function searchUserById(id: string | undefined): Promise<TuserSchem
  */
 export async function fetchAllUsers(): Promise<userType[]> {
   const data: userType[] = [];
-  const snapshot = await adminDb.collection("user").get();
+  const snapshot = await adminDb.collection("users").get();
 
   snapshot.forEach((doc) => {
     const docData = doc.data();
@@ -173,7 +183,7 @@ export async function fetchAllUsers(): Promise<userType[]> {
  * Delete a user document by its Firestore ID.
  */
 export async function deleteUser(id: string): Promise<{ message: { success: string } }> {
-  await adminDb.collection("user").doc(id).delete();
+  await adminDb.collection("users").doc(id).delete();
   return { message: { success: "ok" } };
 }
 

@@ -13,64 +13,183 @@ import path from "path";
 import fs from "fs";
 import { randomUUID } from "crypto";
 
+
+
+
+export type ProductSearchType = {
+  id: string;
+
+  name: string;
+
+  price: number;
+
+  currentStock: number;
+
+  type: string;
+
+  productCat: string;
+
+  image: string;
+
+  searchCode: string;
+
+  updatedAt: number;
+};
+
 //  Cached version — reduces Firestore reads massively
-export const fetchProducts = cache(async (): Promise<ProductType[]> => {
-  try {
-    const snapshot = await adminDb.collection("products").get();
 
-    if (snapshot.empty) return [];
+import { unstable_cache } from "next/cache";
+import { deleteRecipesByProductId } from "../productRecipes/deleteRecipesByProductId";
+import { addProductStock } from "./addProductsStock";
+import { updateProductStockOnEdit } from "./updateProductStockOnEdit";
+import { deleteProductStock } from "./deleteProductStock";
 
-    return snapshot.docs.map((doc) => {
-      const data = doc.data() as Partial<ProductType> & { updatedAt?: any };
 
-      let updatedAt: string | null = null;
-      if (data.updatedAt) {
-        if (typeof data.updatedAt.toDate === "function") {
-          updatedAt = data.updatedAt.toDate().toISOString();
-        } else if (typeof data.updatedAt === "string") {
-          updatedAt = data.updatedAt;
+export const fetchProducts = unstable_cache(
+  async (): Promise<ProductType[]> => {
+    try {
+      const snapshot = await adminDb
+        .collection("products")
+        .get();
+
+      if (snapshot.empty) return [];
+
+      return snapshot.docs.map((doc) => {
+        const data = doc.data() as Partial<ProductType> & {
+          updatedAt?: any;
+        };
+
+        let updatedAt: string | null = null;
+
+        if (data.updatedAt) {
+          if (
+            typeof data.updatedAt.toDate ===
+            "function"
+          ) {
+            updatedAt =
+              data.updatedAt
+                .toDate()
+                .toISOString();
+          } else if (
+            typeof data.updatedAt ===
+            "string"
+          ) {
+            updatedAt = data.updatedAt;
+          }
         }
-      }
 
-      return {
-        id: doc.id,
-        name: data.name ?? "",
-        price: data.price ?? 0,
-        stockQty: data.stockQty ?? 0,
-        discountPrice: data.discountPrice ?? 0,
-        categoryId: data.categoryId ?? "",
-        parentId: data.parentId ?? "",
-        hasVariants: data.hasVariants ?? false,
-        hasModifier:data.hasModifier ?? false,
-        type: data.type ?? "parent",
-        productCat: data.productCat ?? "",
-        flavors: data.flavors ?? false,
+        return {
+          id: doc.id,
 
-        publishStatus: data.publishStatus ?? "published",
-        stockStatus: data.stockStatus ?? "out_of_stock",
+          name: data.name ?? "",
 
-        baseProductId: data.baseProductId ?? "",
-        productDesc: data.productDesc ?? "",
-        sortOrder: data.sortOrder ?? 0,
-        image: data.image ?? "",
-        isFeatured: data.isFeatured ?? false,
-        purchaseSession: data.purchaseSession ?? null,
-        quantity: data.quantity ?? null,
-        updatedAt,
-        searchCode: data.searchCode ?? "",
-        // tax fields
-        taxRate: data.taxRate ?? undefined,
-        taxType: data.taxType,
-      };
-    });
-  } catch (error) {
-    console.error("Failed to fetch products:", error);
-    throw new Error("Error retrieving product list");
+          price: data.price ?? 0,
+
+          currentStock:
+            data.currentStock ?? 0,
+
+          discountPrice:
+            data.discountPrice ?? 0,
+
+          categoryId:
+            data.categoryId ?? "",
+
+          masterCategoryId:
+            data.masterCategoryId ?? "",
+
+          masterCategoryName:
+            data.masterCategoryName ?? "",
+
+
+          parentId:
+            data.parentId ?? "",
+
+          hasVariants:
+            data.hasVariants ?? false,
+
+          hasModifier:
+            data.hasModifier ?? false,
+
+          type:
+            data.type ?? "parent",
+
+          productCat:
+            data.productCat ?? "",
+
+          flavors:
+            data.flavors ?? false,
+
+          publishStatus:
+            data.publishStatus ??
+            "published",
+
+          stockStatus:
+            data.stockStatus ??
+            "out_of_stock",
+
+          baseProductId:
+            data.baseProductId ?? "",
+
+          productDesc:
+            data.productDesc ?? "",
+
+          sortOrder:
+            data.sortOrder ?? 0,
+
+          image:
+            data.image ?? "",
+
+          isFeatured:
+            data.isFeatured ?? false,
+
+            favorite:
+            data.favorite ?? false,
+
+          purchaseSession:
+            data.purchaseSession ??
+            null,
+
+          quantity:
+            data.currentStock ?? null,
+
+          updatedAt,
+
+          searchCode:
+            data.searchCode ?? "",
+
+          taxRate:
+            data.taxRate ??
+            undefined,
+
+          taxType:
+            data.taxType,
+        };
+      });
+    } catch (error) {
+      console.error(
+        "Failed to fetch products:",
+        error
+      );
+
+      return [];
+    }
+  },
+
+  // CACHE KEY
+  ["all-products"],
+
+  // OPTIONS
+  {
+    tags: ["products"],
+
+    // 1 hour cache
+    revalidate: 3600,
   }
-});
+);
+
 
 export async function addNewProduct(formData: FormData) {
-  console.log("product save-------------")
+
   try {
     const rawHasVariants = formData.get("hasVariants");
 
@@ -91,26 +210,46 @@ export async function addNewProduct(formData: FormData) {
       | "published"
       | "draft"
       | "out_of_stock";
-    const stockQtyRaw = formData.get("stockQty") as string | null;
+    const currentStockRaw = formData.get("currentStock") as string | null;
 
     //  New tax fields
     const taxRateRaw = formData.get("taxRate") as string | null;
     const taxType = formData.get("taxType") as string | null;
     const searchCode = formData.get("searchCode") as string | null;
-    const stockQty = stockQtyRaw ? parseInt(stockQtyRaw, 10) : null;
+    const currentStock = currentStockRaw ? parseInt(currentStockRaw, 10) : null;
     const priceF = parseFloat(price.replace(/,/g, ".")) || 0;
     const discountPriceF = parseFloat(discountPrice.replace(/,/g, ".")) || 0;
     const sortOrderN = parseInt(sortOrder || "0", 10);
     const taxRate = taxRateRaw ? parseFloat(taxRateRaw) : null;
+    const masterCategoryId = formData.get("masterCategoryId") as string | null;
+    const productMode =
+      (formData.get("productMode") as string) || "finished_stock";
+
+    const sellingUnit =
+      (formData.get("sellingUnit") as string) || "kg";
+
+
+    let masterCategoryName = "";
+
+    if (masterCategoryId) {
+      const masterCategoryDoc = await adminDb
+        .collection("masterCategories")
+        .doc(masterCategoryId)
+        .get();
+
+      masterCategoryName =
+        masterCategoryDoc.data()?.name || "";
+    }
 
     const receivedData = {
       name,
       searchCode,
       price: priceF,
       discountPrice: discountPriceF,
-      stockQty,
+      currentStock,
       sortOrder: sortOrderN,
       categoryId,
+      masterCategoryId,
       productDesc,
       image,
       isFeatured: featured_img,
@@ -154,13 +293,15 @@ export async function addNewProduct(formData: FormData) {
       searchCode,
       price: priceF,
       discountPrice: discountPriceF,
-      stockQty,
+      currentStock,
       sortOrder: sortOrderN,
       categoryId,
       parentId,
       hasVariants,
       type,
       productCat,
+      masterCategoryId,
+      masterCategoryName,
       productDesc,
       image: image ? imageUrl : null,
       isFeatured: featured_img,
@@ -174,25 +315,49 @@ export async function addNewProduct(formData: FormData) {
       createdAt: new Date().toISOString(),
     };
 
-    console.log("product data-------------", data)
+
 
     //  Save to Firestore
 
     const docRef = await adminDb.collection("products").add(data);
 
+
+
+    await addProductStock({
+      id: docRef.id, // ✅ SAME ID
+
+      name,
+      productMode: productMode as
+        | "raw_stock"
+        | "finished_stock"
+        | "simple",
+
+      sellingPrice: priceF,
+      costPrice: priceF, // default
+
+      sellingUnit,
+
+      categoryId,
+      categoryName: productCat,
+    });
+
+
     revalidateTag("products", "max");
     revalidateTag("featured-products", "max");
-
+    revalidateTag("stock-products-updated", "max");
     //    REVALIDATE ALL PRODUCT PAGES
     revalidatePath("/"); // storefront home
     revalidatePath("/products"); // storefront products page
     revalidatePath("/admin/products"); // admin product list
 
+
+
+
     if (type == "variant") {
       updateProductType(parentId, "parent", true);
     }
 
-    return {
+    return { 
       success: true,
       message: "Product saved successfully",
       id: docRef.id,
@@ -203,233 +368,112 @@ export async function addNewProduct(formData: FormData) {
   }
 }
 
-export async function editProduct(formData: FormData) {
-  const id = formData.get("id") as string;
-  const name = formData.get("name");
-  const type = formData.get("type") as string;
-  const priceRaw = formData.get("price") as string;
-  const discountPriceRaw = formData.get("discountPrice") as string;
-  const stockQtyS = formData.get("stockQty") as string;
-  const sortOrderRaw = formData.get("sortOrder") as string;
-  let categoryId = formData.get("categoryId") as string;
-  const productDesc = formData.get("productDesc");
-  const oldImageUrl = formData.get("oldImageUrl") as string;
-  const image = formData.get("image");
-  const status = formData.get("status") || "published";
-  const searchCode = formData.get("searchCode") as string | null;
-  //  isFeatured now correctly handled
-  const isFeaturedRaw = formData.get("isFeatured");
-  const isFeatured =
-    isFeaturedRaw === null
-      ? undefined // means: not sent → don’t overwrite
-      : isFeaturedRaw === "true";
-
-  //  GST / tax fields
-  const taxRateRaw = formData.get("taxRate") as string | null;
-  const taxType = (formData.get("taxType") as string | null) ?? null;
 
 
-console.log("product data-------------")
-const publishStatus = (formData.get("status") as string) || "published";
-  
 
-  //  Validate received data
-  const receivedData = {
-    name,
-    //searchCode,
-    price: priceRaw,
-    discountPrice: discountPriceRaw,
-    stockQty: stockQtyS,
-    sortOrder: sortOrderRaw,
-    categoryId,
-    productDesc,
-    image,
-    publishStatus:"published",
-  };
+export async function deleteProduct(
+  id: string,
+  oldImageUrl: string
+) {
+  const docRef = adminDb
+    .collection("products")
+    .doc(id);
 
-const result = editProductSchema.safeParse(receivedData);
+  try {
+    // ✅ 1. DELETE RECIPES FIRST
+    const recipeResult =
+      await deleteRecipesByProductId(id);
 
-if (!result.success) {
-  console.log("❌ ZOD VALIDATION FAILED");
-
-  // 🔍 Show full incoming data
-  console.log("📦 Received Data:", receivedData);
-
-  // 🔍 Show formatted errors (clean)
-  console.log("🧾 Flattened Errors:", result.error.flatten());
-
-  // 🔍 Show detailed issues (best for debugging)
-  result.error.issues.forEach((issue, index) => {
-    console.log(`🔴 Issue ${index + 1}:`);
-    console.log("Field:", issue.path.join("."));
-    console.log("Message:", issue.message);
-  //  console.log("Received Value:", issue.path.reduce((obj, key) => obj?.[key], receivedData));
-  });
-
-  const zodErrors: Record<string, string> = {};
-  result.error.issues.forEach((issue) => {
-    zodErrors[issue.path[0]] = issue.message;
-  });
-
-  return { errors: zodErrors };
-}
-
-  // 🔹 Fetch existing product
-
-  const productRef = adminDb.collection("products").doc(id);
-  const productSnap = await productRef.get();
-  if (!productSnap.exists) {
-    return { errors: "Product not found" };
-  }
-
-  const existingProduct = productSnap.data();
-
-  // 🔸 Handle image upload
-  // let imageUrl = oldImageUrl;
-  // if (image && image !== "undefined") {
-  //   try {
-  //     imageUrl = await upload(image);
-  //   } catch (error) {
-  //     console.error("Image upload failed:", error);
-  //     return { errors: "Image could not be uploaded" };
-  //   }
-  // } else {
-  //   imageUrl = existingProduct?.image || oldImageUrl;
-  // }
-
-  // 🔸 Handle image upload + delete old image
-  let imageUrl = oldImageUrl;
-
-  if (image && image !== "undefined") {
-    try {
-      //  Upload new image
-      imageUrl = await upload(image);
-
-      //  Delete old Cloudinary image (skip if default image)
-      if (oldImageUrl && !oldImageUrl.includes("/com.jpg")) {
-        const oldParts = oldImageUrl.split("/");
-        const publicId = oldParts.slice(-2).join("/").split(".")[0];
-        // ex: anjana-bhog/xyz123
-
-        try {
-          await deleteImage(publicId);
-          console.log(" Old Cloudinary image deleted:", publicId);
-        } catch (err) {
-          console.error("❌ Failed to delete old image:", err);
-        }
-      }
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      return { errors: "Image could not be uploaded" };
+    if (!recipeResult.success) {
+      return {
+        errors:
+          "Failed to delete related recipes",
+      };
     }
-  } else {
-    //  Keep old image if no new image uploaded
-    imageUrl = existingProduct?.image || oldImageUrl;
-  }
 
-  // 🔸 Handle category (keep same if not changed)
-  if (categoryId === "0" || !categoryId) {
-    categoryId = existingProduct?.categoryId || "";
-  }
-
-  // 🔹 Fetch category name
-  let productCat = "Uncategorized";
-  try {
-    const categories = await fetchCategories();
-    const matchedCategory = categories.find((cat) => cat.id === categoryId);
-    if (matchedCategory) productCat = matchedCategory.name;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-  }
-
-  // 🔸 Format numbers
-  const formatPrice = (val: string): string =>
-    Number(parseFloat(val.replace(/,/g, ".")).toFixed(2)).toFixed(2);
-
-  const price = formatPrice(priceRaw);
-  const discountPrice = discountPriceRaw
-    ? formatPrice(discountPriceRaw)
-    : "0.00";
-  const sortOrder = parseInt(sortOrderRaw);
-
-  //  Convert taxRate safely
-  const taxRate = taxRateRaw ? parseFloat(taxRateRaw) || null : null;
-
-  //  Build update data
-  const productData: Record<string, any> = {
-    name,
-    type,
-    searchCode,
-    price,
-    discountPrice,
-    stockQty: Number(stockQtyS),
-    flavors: existingProduct?.flavors ?? false,
-    sortOrder,
-    categoryId,
-    productCat,
-    productDesc,
-    image: imageUrl,
-    status,
-    updatedAt: new Date().toISOString(),
-    taxRate,
-    taxType: taxType ?? existingProduct?.taxType ?? null,
-  };
-
-  console.log("product data-------------", productData)
-
-  //  Only overwrite isFeatured if explicitly sent
-  if (typeof isFeatured !== "undefined") {
-    productData.isFeatured = isFeatured;
-  } else {
-    productData.isFeatured = existingProduct?.isFeatured ?? false;
-  }
-
-  try {
-    await productRef.update(productData);
-    revalidateTag("products", "max");
-    revalidateTag("featured-products", "max");
-    return { message: " Product updated successfully" };
-  } catch (error) {
-    console.error("❌ Failed to update product:", error);
-    return { errors: "Failed to update product" };
-  }
-}
-
-export async function deleteProduct(id: string, oldImageUrl: string) {
-  const docRef = adminDb.collection("products").doc(id);
-
-  try {
-    //  Delete Firestore product
+    // ✅ 2. DELETE PRODUCT
     await docRef.delete();
-    console.log("Product deleted from Firestore:", id);
 
-    //  Delete image if not default
+
+    // ✅ 2.5 DELETE PRODUCT STOCK
+    await deleteProductStock(id);
+
+    // ✅ 3. DELETE IMAGE
     if (oldImageUrl !== "/com.jpg") {
-      const imagePublicId = oldImageUrl
-        .split("/")
-        .slice(-2)
-        .join("/")
-        .split(".")[0];
+      const imagePublicId =
+        oldImageUrl
+          .split("/")
+          .slice(-2)
+          .join("/")
+          .split(".")[0];
 
       try {
         await deleteImage(imagePublicId);
+
         console.log("Image deleted");
       } catch (error) {
-        console.error("Error deleting image:", error);
-        // ⚠️ Still revalidate, but return warning
+        console.error(
+          "Error deleting image:",
+          error
+        );
+
+
+
+
+
+
+        //         await adminDb.collection("productStock").doc(id).update({
+        //   isDeleted: true,
+        //   trackInventory: false,
+        //   updatedAt: Date.now(),
+        // });
+
+
+
         revalidateTag("products", "max");
-        return { errors: "Product deleted, but failed to delete image." };
+        revalidateTag(
+          "featured-products",
+          "max"
+        );
+
+        revalidatePath("/");
+        revalidatePath("/products");
+        revalidatePath(
+          "/admin/products"
+        );
+
+        return {
+          errors:
+            "Product deleted, but failed to delete image.",
+        };
       }
     }
 
-    //  NOW revalidate cache
+    // ✅ 4. REVALIDATE
     revalidateTag("products", "max");
-    revalidateTag("featured-products", "max");
+    revalidateTag(
+      "featured-products",
+      "max"
+    );
 
-    return { message: "Product and image deleted successfully." };
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath("/admin/products");
+
+    return {
+      message:
+        "Product, recipes and image deleted successfully.",
+    };
   } catch (error) {
-    console.error("Error deleting product from Firestore:", error);
-    return { errors: "Failed to delete product." };
+    console.error(
+      "Error deleting product:",
+      error
+    );
+
+    return {
+      errors:
+        "Failed to delete product.",
+    };
   }
 }
 
@@ -588,13 +632,13 @@ export async function addNewProduct_without_revalidate(formData: FormData) {
       | "published"
       | "draft"
       | "out_of_stock";
-    const stockQtyRaw = formData.get("stockQty") as string | null;
+    const currentStockRaw = formData.get("currentStock") as string | null;
 
     //  New tax fields
     const taxRateRaw = formData.get("taxRate") as string | null; // e.g. "5", "12", "18"
     const taxType = (formData.get("taxType") as string | null) || "GST"; // default to GST if empty
 
-    const stockQty = stockQtyRaw ? parseInt(stockQtyRaw, 10) : null;
+    const currentStock = currentStockRaw ? parseInt(currentStockRaw, 10) : null;
     const priceF = parseFloat(price.replace(/,/g, ".")) || 0;
     const discountPriceF = parseFloat(discountPrice.replace(/,/g, ".")) || 0;
     const sortOrderN = parseInt(sortOrder || "0", 10);
@@ -604,7 +648,7 @@ export async function addNewProduct_without_revalidate(formData: FormData) {
       name,
       price: priceF,
       discountPrice: discountPriceF,
-      stockQty,
+      currentStock,
       sortOrder: sortOrderN,
       categoryId,
       productDesc,
@@ -652,7 +696,7 @@ export async function addNewProduct_without_revalidate(formData: FormData) {
       name,
       price: priceF,
       discountPrice: discountPriceF,
-      stockQty,
+      currentStock,
       sortOrder: sortOrderN,
       categoryId,
       productCat,
@@ -669,7 +713,7 @@ export async function addNewProduct_without_revalidate(formData: FormData) {
       createdAt: new Date().toISOString(),
     };
 
-    console.log("data---------------", data);
+ 
 
     //  Save to Firestore
     const docRef = await adminDb.collection("products").add(data);
@@ -702,17 +746,21 @@ export async function fetchProductById(
       id: docSnap.id,
       name: data?.name ?? "",
       price: data?.price ?? 0,
-      stockQty: data?.stockQty ?? 0,
+      currentStock: data?.currentStock ?? 0,
       discountPrice: data?.discountPrice ?? undefined,
       categoryId: data?.categoryId ?? "",
       productCat: data?.productCat ?? undefined,
+      masterCategoryId: data?.masterCategoryId ?? "",
+
+      masterCategoryName: data?.masterCategoryName ?? "",
       baseProductId: data?.baseProductId ?? "",
       productDesc: data?.productDesc ?? "",
+      quantity: 0,
       sortOrder: data?.sortOrder ?? 0,
       image: data?.image ?? "",
       isFeatured: data?.isFeatured ?? false,
+      favorite: data?.favorite ?? false,
       purchaseSession: data?.purchaseSession ?? null,
-      quantity: data?.quantity ?? null,
       flavors: data?.flavors ?? false,
       publishStatus: data?.publishStatus ?? "draft",
       stockStatus: data?.stockStatus ?? "out_of_stock",
@@ -744,10 +792,51 @@ export async function fetchProductByCategoryId(
       return [];
     }
 
-    const products: ProductType[] = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as ProductType[];
+    const products: ProductType[] = querySnapshot.docs.map((doc) => {
+  const data = doc.data();
+
+  return {
+    id: doc.id,
+    name: data.name ?? "",
+    price: data.price ?? 0,
+    currentStock: data.currentStock ?? 0,
+    discountPrice: data.discountPrice,
+
+    categoryId: data.categoryId ?? "",
+    masterCategoryId: data.masterCategoryId ?? "",
+    masterCategoryName: data.masterCategoryName ?? "",
+
+    productCat: data.productCat,
+    baseProductId: data.baseProductId ?? "",
+    productDesc: data.productDesc ?? "",
+
+    quantity: 0,
+
+    // ⭐ REQUIRED BY ProductType
+    favorite: data.favorite ?? false,
+
+    sortOrder: data.sortOrder ?? 0,
+    image: data.image ?? "",
+    isFeatured: data.isFeatured ?? false,
+    flavors: data.flavors ?? false,
+    publishStatus: data.publishStatus ?? "draft",
+    stockStatus: data.stockStatus ?? "out_of_stock",
+    searchCode: data.searchCode ?? "",
+
+    taxRate: data.taxRate,
+    taxType: data.taxType,
+
+    purchaseSession: data.purchaseSession ?? null,
+
+    sku: data.sku,
+    barcode: data.barcode,
+    minStock: data.minStock,
+    productMode: data.productMode,
+    inventoryItemId: data.inventoryItemId,
+    trackInventory: data.trackInventory,
+    allowNegativeStock: data.allowNegativeStock,
+  };
+});
 
     return products;
   } catch (error) {
@@ -798,6 +887,40 @@ export async function toggleFeatured(productId: string, isFeatured: boolean) {
   }
 }
 
+export async function toggleFavorite(
+  productId: string,
+  favorite: boolean
+) {
+  try {
+    const productRef = adminDb
+      .collection("products")
+      .doc(productId);
+
+    await productRef.update({
+      favorite,
+    });
+
+    revalidateTag("products", "max");
+
+    return {
+      success: true,
+      message: `Product ${
+        favorite ? "added to favorites" : "removed from favorites"
+      } successfully.`,
+    };
+  } catch (error) {
+    console.error(
+      "Error toggling favorite status:",
+      error
+    );
+
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
+  }
+}
+
 /**
  * Upload a product to Firestore from CSV data
  */
@@ -813,7 +936,7 @@ export async function uploadProductFromCSV(data: Partial<ProductType>) {
     price: Number(data.price),
     discountPrice:
       data.discountPrice !== undefined ? Number(data.discountPrice) : 0,
-    stockQty: data.stockQty ?? 0,
+    // currentStock: data.currentStock ?? 0,
     categoryId: data.categoryId ?? "",
     productCat: data.productCat ?? "",
     baseProductId: data.baseProductId ?? "",
@@ -821,6 +944,7 @@ export async function uploadProductFromCSV(data: Partial<ProductType>) {
     sortOrder: data.sortOrder !== undefined ? Number(data.sortOrder) : 0,
     image: data.image ?? "",
     isFeatured: String(data.isFeatured).toLowerCase() === "true" ? true : false,
+     favorite: data.favorite ?? false,
     purchaseSession: data.purchaseSession ?? null,
     quantity:
       data.quantity !== undefined && data.quantity !== null
@@ -890,7 +1014,7 @@ export async function updateProductField(
     discountPrice: number;
     taxRate: number;
     taxType: "inclusive" | "exclusive";
-    stockQty: number;
+    currentStock: number;
     sortOrder: number;
   }>
 ) {
@@ -950,3 +1074,160 @@ export async function updateProductField(
 
 
 
+export const fetchLatestProducts = unstable_cache(
+  async (): Promise<ProductType[]> => {
+    try {
+      const snapshot = await adminDb
+        .collection("products")
+        // .where("publishStatus", "==", "published")
+        // .where("type", "==", "parent")
+        .orderBy("updatedAt", "desc")
+        .limit(4)
+        .get();
+
+      if (snapshot.empty) return [];
+
+      return snapshot.docs.map((doc) => {
+        const data = doc.data() as Partial<ProductType> & {
+          updatedAt?: any;
+        };
+
+        let updatedAt: string | null = null;
+
+        if (data.updatedAt) {
+          if (typeof data.updatedAt.toDate === "function") {
+            updatedAt = data.updatedAt.toDate().toISOString();
+          } else if (typeof data.updatedAt === "string") {
+            updatedAt = data.updatedAt;
+          }
+        }
+
+        return {
+          id: doc.id,
+
+          name: data.name ?? "",
+
+          price: data.price ?? 0,
+
+          currentStock: data.currentStock ?? 0,
+
+          discountPrice: data.discountPrice ?? 0,
+
+          categoryId: data.categoryId ?? "",
+
+          masterCategoryId: data.masterCategoryId ?? "",
+
+          masterCategoryName: data.masterCategoryName ?? "",
+
+          parentId: data.parentId ?? "",
+
+          hasVariants: data.hasVariants ?? false,
+
+          hasModifier: data.hasModifier ?? false,
+
+          type: data.type ?? "parent",
+
+          productCat: data.productCat ?? "",
+
+          flavors: data.flavors ?? false,
+
+          publishStatus: data.publishStatus ?? "published",
+
+          stockStatus: data.stockStatus ?? "out_of_stock",
+
+          baseProductId: data.baseProductId ?? "",
+
+          productDesc: data.productDesc ?? "",
+
+          sortOrder: data.sortOrder ?? 0,
+
+          image: data.image ?? "",
+
+          isFeatured: data.isFeatured ?? false,
+ favorite: data.favorite ?? false,
+          purchaseSession: data.purchaseSession ?? null,
+
+          quantity: data.currentStock ?? null,
+
+          updatedAt,
+
+          searchCode: data.searchCode ?? "",
+
+          taxRate: data.taxRate ?? undefined,
+
+          taxType: data.taxType,
+
+          sku: data.sku ?? "",
+          barcode: data.barcode ?? "",
+          productMode: data.productMode,
+          inventoryItemId: data.inventoryItemId,
+          trackInventory: data.trackInventory ?? false,
+          allowNegativeStock: data.allowNegativeStock ?? false,
+          minStock: data.minStock ?? 0,
+        };
+      });
+    } catch (error) {
+      console.error("Failed to fetch latest products:", error);
+      return [];
+    }
+  },
+  ["latest-products"],
+  {
+    tags: ["products"],
+    revalidate: 3600,
+  }
+);
+
+
+
+
+
+
+export const fetchProducts1 = cache(
+  async (): Promise<ProductSearchType[]> => {
+    try {
+      const snapshot = await adminDb
+        .collection("products")
+        .select(
+          "name",
+          "price",
+          "currentStock",
+          "type",
+          "productCat",
+          "searchCode",
+          "image",
+          "updatedAt"
+        )
+        .get();
+
+      return snapshot.docs.map((doc) => {
+        const data = doc.data();
+
+        return {
+          id: doc.id,
+
+          name: data.name ?? "",
+
+          price: data.price ?? 0,
+
+          currentStock: data.currentStock ?? 0,
+
+          type: data.type ?? "parent",
+
+          productCat: data.productCat ?? "",
+
+          image: data.image ?? "",
+
+          searchCode: data.searchCode ?? "",
+
+          updatedAt:
+            data.updatedAt?.toMillis?.() || 0,
+        };
+      });
+    } catch (error) {
+      console.error(error);
+
+      return [];
+    }
+  }
+);

@@ -26,15 +26,15 @@ export default async function AdminLayout({
 
   return (
     <Providers>
-      <main className="relative flex text-slate-600">
+      <main className="relative flex text-slate-600 ">
         <SideBarBase />
 
         <div className="w-full flex flex-col">
-          <div className="lg:hidden">
+          <div className="w-full flex flex-col  pt-[80px] lg:pt-2 bg-[#fafafa] ">
             <Header />
           </div>
 
-          <div className="w-full flex flex-col px-5 pt-17 bg-[#fafafa] h-screen">
+         <div className="w-full flex flex-col   pt-[20px] lg:pt-2 bg-[#fafafa] min-h-screen">
             <LanguageProvider>{children}</LanguageProvider>
           </div>
         </div>
