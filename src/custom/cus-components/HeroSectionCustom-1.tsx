@@ -20,7 +20,7 @@ export default function HeroSectionCustom() {
       <div className="relative w-full h-[50vh] md:h-[90vh] flex items-center justify-center">
 
         <Image
-          src="/images/hero-12.jpg"
+          src="/images/hero-13.jpg"
           alt="Restaurant background"
           fill
           className="object-cover"

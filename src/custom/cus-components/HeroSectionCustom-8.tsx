@@ -27,7 +27,7 @@ export default function HeroSectionAsymmetricBG() {
 
       {/* Background Image */}
       <Image
-        src="/images/hero-12.jpg"
+        src="/images/hero-13.jpg"
         alt="Food background"
         fill
         className="object-cover"

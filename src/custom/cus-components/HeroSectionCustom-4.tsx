@@ -16,7 +16,7 @@ export default function HeroSectionModern3() {
 
       {/* Background Image */}
       <Image
-        src="/images/hero-12.jpg"
+        src="/images/hero-13.jpg"
         alt="Restaurant background"
         fill
         className="object-cover scale-105"
