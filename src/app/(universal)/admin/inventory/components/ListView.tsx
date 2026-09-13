@@ -38,7 +38,7 @@ export default function ListView({
   inventoryItems,
   categories
 }: Props) {
-console.log("inventory------------------------",inventoryItems)
+//console.log("inventory------------------------",inventoryItems)
 
   const [filtered, setFiltered] =
     useState<InventoryItemType[]>([]);
@@ -253,19 +253,21 @@ console.log("inventory------------------------",inventoryItems)
             <TableHeader className="bg-gray-50">
               <TableRow>
                 <TableHead className="py-4">
-                  Item
+                  Act
                 </TableHead>
-                <TableHead>
+                {/* <TableHead>
                   Category
-                </TableHead>
-                <TableHead>
+                </TableHead> */}
+                {/* <TableHead>
                   SKU
-                </TableHead>
+                </TableHead> */}
 
-                <TableHead>
+                {/* <TableHead>
                   Unit
+                </TableHead> */}
+ <TableHead className="py-4">
+                  Item Name
                 </TableHead>
-
                 <TableHead>
                   Stock
                 </TableHead>
