@@ -79,7 +79,7 @@ export default function HeroSectionCustom() {
         <div className="relative w-full h-[300px] md:h-[500px] rounded-3xl overflow-hidden shadow-xl">
 
           <Image
-            src="/images/hero-13.jpg"
+            src="/images/hero-14.jpg"
             alt="Food"
             fill
             className="object-cover"

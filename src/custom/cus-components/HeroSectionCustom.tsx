@@ -26,7 +26,7 @@ export default function HeroSectionLuxuryMinimal() {
 
       {/* Background Image */}
       <Image
-        src="/images/hero-13.jpg"
+        src="/images/hero-14.jpg"
         alt="Luxury dining background"
         fill
         className="object-cover"

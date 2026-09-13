@@ -78,7 +78,7 @@ export default function HeroSectionAsymmetric() {
           {/* Main Dish Image */}
           <div className="relative z-10">
             <Image
-              src="/images/hero-13.jpg"
+              src="/images/hero-14.jpg"
               alt="Signature dish"
               width={400}
               height={400}
