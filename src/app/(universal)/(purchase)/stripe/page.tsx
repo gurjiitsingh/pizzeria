@@ -1,5 +1,6 @@
+import StripeWrapper from '@/custom/stripe/StripeWrapper'
 import React, { Suspense } from 'react'
-import StripeWrapper from './conmponets/StripeWrapper';
+//  import StripeWrapper from "@/custom/cus-components/stripe/StripeWrapper";
 
 export default function page() {
   return (

@@ -22,22 +22,40 @@ export async function POST(req: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (error) {
-    console.error("Stripe webhook verification failed:", error);
+    console.error(
+      "Stripe webhook signature verification failed:",
+      error
+    );
 
     return new NextResponse("Invalid signature", {
       status: 400,
     });
   }
 
-  console.log("Stripe event received:", event.type);
+  console.log("Stripe webhook received:", event.type);
 
-  if (event.type === "checkout.session.completed") {
-    const session =
-      event.data.object as Stripe.Checkout.Session;
+  switch (event.type) {
+    case "checkout.session.completed": {
+      const session =
+        event.data.object as Stripe.Checkout.Session;
 
-    console.log("Checkout completed:", session.id);
+      console.log(
+        "Checkout completed:",
+        session.id
+      );
 
-    // We will update your Firestore order here.
+      console.log(
+        "Order ID:",
+        session.metadata?.orderMasterId
+      );
+
+      break;
+    }
+
+    default:
+      console.log(
+        `Unhandled Stripe event: ${event.type}`
+      );
   }
 
   return NextResponse.json({
