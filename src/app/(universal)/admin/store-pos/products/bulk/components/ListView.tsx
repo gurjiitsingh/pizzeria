@@ -11,6 +11,8 @@ import TableRows from "./TableRows";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ProductType } from "@/lib/types/productType";
 import { categoryType } from "@/lib/types/categoryType";
+import { fetchProductsFresh } from "@/app/(universal)/action/products/fetchProductsFresh";
+import { fetchProducts } from "@/app/(universal)/action/products/dbOperation";
 
 export default function ListView() {
   const router = useRouter();
@@ -47,19 +49,25 @@ export default function ListView() {
   }, []);
 
   // load products
-  useEffect(() => {
-    async function loadProducts() {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/products");
-        const json = await res.json();
-        setProducts(json ?? []);
-      } finally {
-        setLoading(false);
-      }
+useEffect(() => {
+  async function loadProducts() {
+    setLoading(true);
+
+    try {
+      const products = await fetchProducts();
+      setProducts(products ?? []);
+    } catch (error) {
+      console.error("Failed to load products:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
-    loadProducts();
-  }, []);
+  }
+
+  loadProducts();
+}, []);
+
+
 
   // ⏳ delayed URL update (search only)
   useEffect(() => {
@@ -166,7 +174,7 @@ export default function ListView() {
                 <th>Price</th>
                 <th>Product Name</th>
                 <th>Category</th>
-                
+                 <th>Enable/Disable Discount</th>
                 <th>Discount Price</th>
                 {/* <th>Qty</th> */}
                 <th>Tax</th>

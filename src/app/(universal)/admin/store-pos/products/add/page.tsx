@@ -81,6 +81,9 @@ const Page = () => {
       setValue("taxType", selectedCat.taxType ?? undefined);
     }
   }, [selectedCategoryId, categoryData, setValue]);
+
+
+  
   async function onSubmit(data: TnewProductSchema) {
     setIsSubmitting(true);
     const formData = new FormData();
@@ -105,7 +108,9 @@ const Page = () => {
          if (data.image?.[0]) {
             const compressedFile =
               await imageCompression(data.image[0], {
-               maxWidthOrHeight: 500,
+              maxWidthOrHeight: Number(
+  process.env.NEXT_PUBLIC_PRODUCT_IMAGE_MAX_SIZE || 500
+),
                  maxSizeMB: 0.2,
   initialQuality: 0.8,
   useWebWorker: true,

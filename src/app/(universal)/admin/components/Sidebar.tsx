@@ -123,7 +123,7 @@ const Sidebar = () => {
       sidebar: {
         home: "Home",
         orders: "Orders",
-        orders_realtime: "Orders Realtime",
+      //  orders_realtime: "Orders Realtime",
         sale: "Sale",
         reservations: "Reservations",
         categories: "Categories",
@@ -135,7 +135,7 @@ const Sidebar = () => {
         
         coupon: "Coupon",
         delivery: "Delivery",
-        users: "Employees",
+        users: "Userss",
         dayschedule: "Opening Timing",
         setting: "Setting",
         data_backup: "Data Backup",
@@ -148,20 +148,20 @@ const Sidebar = () => {
 
   const menuList: Titem[] = [
     { key: "SHOW_HOME", name: BRANDING.sidebar.home, link: "/", icon: <GoHome /> },
-    { key: "SHOW_ORDERS", name: BRANDING.sidebar.orders, link: "/admin", icon: <MdDashboard /> },
-    {
-      key: "SHOW_ORDERS_REALTIME",
-      name: BRANDING.sidebar.orders_realtime,
-      link: "/admin/order-realtime",
-      icon: <MdOutlineCrisisAlert />,
-    },
+    { key: "SHOW_ORDERS", name: BRANDING.sidebar.orders, link: "/admin/orders", icon: <MdDashboard /> },
+    // {
+    //   key: "SHOW_ORDERS_REALTIME",
+    //   name: BRANDING.sidebar.orders_realtime,
+    //   link: "/admin/order-realtime",
+    //   icon: <MdOutlineCrisisAlert />,
+    // },
     { key: "SHOW_CATEGORIES", name: BRANDING.sidebar.categories, link: "/admin/categories", icon: <MdCategory /> },
-    { key: "SHOW_PRODUCTS", name: BRANDING.sidebar.products, link: "/admin/products", icon: <MdInventory /> },
+    // { key: "SHOW_PRODUCTS", name: BRANDING.sidebar.products, link: "/admin/products", icon: <MdInventory /> },
 
    {
   key: "SHOW_STORE_POS",
   name: "Store & POS",
-  link: "/admin/store-pos",
+  link: "/admin/store-pos/products",
   icon: <MdStorefront />,
 },
 {
@@ -270,7 +270,7 @@ const Sidebar = () => {
 
     { key: "SHOW_LOCATIONS", name: "Locations", link: "/admin/locations", icon: <TbTruckDelivery /> },
 
-    { key: "SHOW_USERS", name: "Employee", link: "/admin/users", icon: <FaUsers /> },
+    { key: "SHOW_USERS", name: "Users", link: "/admin/users", icon: <FaUsers /> },
 
     { key: "SHOW_TIMMING", name: "Opening Timing", link: "/admin/day-schedule/form", icon: <MdAccessTime /> },
 

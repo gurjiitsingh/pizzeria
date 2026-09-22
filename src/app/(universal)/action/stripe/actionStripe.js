@@ -4,22 +4,22 @@ import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // Store in .env.local
 
-// export async function createPaymentIntent({ amount }) {
-//   try {
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount: amount, // e.g., 2000 = $20
-//       currency: 'usd',
-//       automatic_payment_methods: { enabled: true },
-//     });
+export async function createPaymentIntent({ amount }) {
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount, // e.g., 2000 = $20
+      currency: 'usd',
+      automatic_payment_methods: { enabled: true },
+    });
 
-//     return {
-//       clientSecret: paymentIntent.client_secret,
-//     };
-//   } catch (err) {
-//     console.error(err);
-//     return { error: err.message };
-//   }
-// }
+    return {
+      clientSecret: paymentIntent.client_secret,
+    };
+  } catch (err) {
+    console.error(err);
+    return { error: err.message };
+  }
+}
 
 
 

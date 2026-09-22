@@ -119,8 +119,8 @@ export default function StockAdjustmentForm({
       "averageCost",
       Number(
         (
-          (selectedInventory.averageCost ?? 0) *
-          mapping.factor
+          (selectedInventory.averageCost ?? 0) 
+         
         ).toFixed(2)
       )
     );
@@ -308,9 +308,7 @@ export default function StockAdjustmentForm({
 
   let averageCost = Number(data.averageCost);
 
-  if (mapping) {
-    averageCost = averageCost / mapping.factor;
-  }
+ 
 
   try {
  const result = await adjustInventoryStock({
@@ -320,7 +318,7 @@ export default function StockAdjustmentForm({
 
   // INTERNAL VALUES (consumption unit)
   quantity: finalQuantity,
-  unitCost: averageCost,
+  averageCost: averageCost,
   stockValue: Number(data.stockValue),
 
   // DISPLAY / PURCHASE UNIT VALUES
@@ -700,7 +698,7 @@ export default function StockAdjustmentForm({
 
             <div className="flex flex-col gap-2">
               <label className="label-style-4">
-                Unit Cost
+                Avg Price 
               </label>
 
               <input
