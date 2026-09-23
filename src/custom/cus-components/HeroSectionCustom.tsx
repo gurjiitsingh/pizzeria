@@ -1,84 +1,348 @@
 "use client";
 
-/*
-========================================
-Hero Name: Luxury Minimal Hero
-Concept:
-- Premium fine-dining feel
-- Focus on typography over UI elements
-- Subtle overlay for readability
-- Clean, elegant, distraction-free
-========================================
-*/
-
 import Image from "next/image";
-import { Chicle } from "next/font/google";
 import Link from "next/link";
+import {
+  ArrowRight,
+  Check,
+  Clock3,
+  Leaf,
+  ShieldCheck,
+  ShoppingBag,
+  Star,
+} from "lucide-react";
 
-const chicle = Chicle({
-  subsets: ["latin"],
-  weight: "400",
-});
-
-export default function HeroSectionLuxuryMinimal() {
+export default function FoodHero() {
   return (
-    <section className="relative w-full h-[90vh] overflow-hidden">
+    <section className="relative overflow-hidden pt-12 bg-[#fffaf5]">
+      {/* Decorative background */}
+      <div className="pointer-events-none absolute -left-40 top-20 h-96 w-96 rounded-full bg-orange-100/60 blur-3xl" />
+      <div className="pointer-events-none absolute right-[-180px] top-[-120px] h-[520px] w-[520px] rounded-full bg-orange-200/30 blur-3xl" />
 
-      {/* Background Image */}
-      <Image
-        src="/images/hero-14.jpg"
-        alt="Luxury dining background"
-        fill
-        className="object-cover"
-        priority
-      />
+      {/* Header */}
+      <header className="relative z-20">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-200">
+              <ShoppingBag size={22} strokeWidth={2.2} />
+            </div>
 
-      {/* Soft dark overlay */}
-      <div className="absolute inset-0 bg-black/50" />
-
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-
-        {/* Small Tagline */}
-        <p className="text-white/70 tracking-[0.3em] text-xs mb-4">
-          FINE DINING EXPERIENCE
-        </p>
-
-        {/* Title */}
-        <h1
-          className={`${chicle.className} text-5xl md:text-7xl text-white mb-6`}
-        >
-          Pizzeria Milano Segle
-        </h1>
-
-        {/* Divider */}
-        <div className="w-20 h-[1px] bg-white/50 mb-6" />
-
-        {/* Subtitle */}
-        <p className="text-white/80 max-w-md text-sm md:text-base mb-8">
-          Crafted with passion. Served with elegance.  
-          Discover authentic flavors in a refined atmosphere.
-        </p>
-
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4">
-
-          <Link
-            href="/#order_now"
-            className="border border-white text-white px-8 py-3 uppercase tracking-wider text-sm hover:bg-white hover:text-black transition"
-          >
-            Order Now
+            <div>
+              <div className="text-xl font-black tracking-tight text-slate-900">
+                Foodly
+              </div>
+              <div className="hidden text-[9px] font-semibold uppercase tracking-[0.22em] text-slate-400 sm:block">
+                Fresh food · Happy mood
+              </div>
+            </div>
           </Link>
+
+          {/* Desktop navigation */}
+          <nav className="hidden items-center gap-9 md:flex">
+            <Link
+              href="/"
+              className="relative text-sm font-semibold text-orange-500"
+            >
+              Home
+              <span className="absolute -bottom-3 left-0 h-0.5 w-full rounded-full bg-orange-500" />
+            </Link>
+
+            <Link
+              href="/menu"
+              className="text-sm font-medium text-slate-600 transition hover:text-orange-500"
+            >
+              Menu
+            </Link>
+
+            <Link
+              href="/about"
+              className="text-sm font-medium text-slate-600 transition hover:text-orange-500"
+            >
+              About
+            </Link>
+
+            <Link
+              href="/contact"
+              className="text-sm font-medium text-slate-600 transition hover:text-orange-500"
+            >
+              Contact
+            </Link>
+          </nav>
+
+          {/* Right */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/cart"
+              className="relative flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-orange-200 hover:text-orange-500"
+            >
+              <ShoppingBag size={19} />
+
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[9px] font-bold text-white">
+                2
+              </span>
+            </Link>
+
+            <Link
+              href="/menu"
+              className="hidden items-center gap-2 rounded-full bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600 hover:shadow-orange-300 sm:flex"
+            >
+              Order Now
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <div className="relative z-10 mx-auto max-w-7xl px-5 pb-14 pt-8 sm:px-8 lg:px-10 lg:pb-20 lg:pt-10">
+        <div className="grid min-h-[650px] items-center gap-12 lg:grid-cols-[0.92fr_1.08fr]">
+          {/* Left content */}
+          <div className="relative z-10 max-w-xl">
+            {/* Badge */}
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-600">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white">
+                <Check size={12} strokeWidth={3} />
+              </span>
+
+              Delicious food, delivered fresh
+            </div>
+
+            {/* Heading */}
+            <h1 className="text-[clamp(3.2rem,6vw,5.8rem)] font-black leading-[0.92] tracking-[-0.055em] text-slate-900">
+              Good food
+              <br />
+
+              <span className="text-orange-500">
+                brings people
+              </span>
+
+              <br />
+
+              together.
+            </h1>
+
+            {/* Description */}
+            <p className="mt-7 max-w-lg text-base leading-7 text-slate-500 sm:text-lg">
+              Fresh ingredients, bold flavors, and your favorite meals
+              delivered straight to your door. Order something delicious
+              today.
+            </p>
+
+            {/* Buttons */}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/menu"
+                className="group inline-flex items-center justify-center gap-3 rounded-full bg-orange-500 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-orange-200 transition hover:-translate-y-0.5 hover:bg-orange-600"
+              >
+                Order Now
+
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition group-hover:translate-x-1">
+                  <ArrowRight size={15} />
+                </span>
+              </Link>
+
+              <Link
+                href="/menu"
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-7 py-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-orange-200 hover:text-orange-500"
+              >
+                Explore Menu
+              </Link>
+            </div>
+
+            {/* Features */}
+            <div className="mt-11 grid max-w-lg grid-cols-3 border-t border-slate-200 pt-6">
+              <Feature
+                icon={<Clock3 size={18} />}
+                title="Fast Delivery"
+                text="30–40 min"
+              />
+
+              <Feature
+                icon={<Leaf size={18} />}
+                title="Fresh Food"
+                text="Every day"
+                border
+              />
+
+              <Feature
+                icon={<ShieldCheck size={18} />}
+                title="Secure Pay"
+                text="100% secure"
+                border
+              />
+            </div>
+          </div>
+
+          {/* Right food visual */}
+          <div className="relative flex min-h-[480px] items-center justify-center lg:min-h-[650px]">
+            {/* Large soft shape */}
+            <div className="absolute right-0 top-1/2 h-[430px] w-[430px] -translate-y-1/2 rounded-[42%] bg-orange-100 sm:h-[530px] sm:w-[530px] lg:h-[600px] lg:w-[600px]" />
+
+            <div className="absolute right-4 top-12 h-24 w-24 rounded-full bg-orange-300/20 blur-xl" />
+
+            {/* Food image */}
+            <div className="relative z-10 w-full max-w-[620px]">
+              <Image
+                src="/images/food-hero.png"
+                alt="Fresh delicious food"
+                width={900}
+                height={900}
+                priority
+                className="h-auto w-full object-contain drop-shadow-[0_35px_35px_rgba(80,50,20,0.18)]"
+              />
+            </div>
+
+            {/* Fresh badge */}
+            <div className="absolute left-1 top-20 z-20 hidden rotate-[-7deg] rounded-3xl bg-white px-5 py-4 shadow-xl shadow-slate-200/70 sm:block">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">✨</span>
+
+                <div>
+                  <p className="text-sm font-black text-slate-900">
+                    Fresh & Tasty
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-slate-400">
+                    Made with love
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Rating card */}
+            <div className="absolute bottom-20 left-0 z-20 hidden items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-xl shadow-slate-200/70 sm:flex">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
+                <Star size={19} fill="currentColor" />
+              </div>
+
+              <div>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-black text-slate-900">
+                    4.9
+                  </span>
+
+                  <div className="flex text-orange-400">
+                    <Star size={11} fill="currentColor" />
+                    <Star size={11} fill="currentColor" />
+                    <Star size={11} fill="currentColor" />
+                    <Star size={11} fill="currentColor" />
+                    <Star size={11} fill="currentColor" />
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-400">
+                  2,000+ happy customers
+                </p>
+              </div>
+            </div>
+
+            {/* Delivery floating card */}
+            <div className="absolute right-0 top-28 z-20 hidden rounded-2xl bg-white px-4 py-3 shadow-xl shadow-slate-200/70 md:block">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-600">
+                  <Clock3 size={19} />
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold text-slate-900">
+                    Quick delivery
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-slate-400">
+                    At your doorstep
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom category strip */}
+        <div className="relative mt-2 hidden items-center justify-between rounded-3xl border border-slate-100 bg-white px-7 py-5 shadow-sm lg:flex">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500">
+              What are you craving?
+            </p>
+
+            <p className="mt-1 text-sm text-slate-400">
+              Choose your favorite and start ordering
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Category emoji="🍕" title="Pizza" />
+            <Category emoji="🍔" title="Burgers" />
+            <Category emoji="🍜" title="Noodles" />
+            <Category emoji="🥗" title="Healthy" />
+            <Category emoji="🍰" title="Desserts" />
+          </div>
 
           <Link
             href="/menu"
-            className="bg-white text-black px-8 py-3 uppercase tracking-wider text-sm hover:bg-gray-200 transition"
+            className="flex items-center gap-2 text-sm font-bold text-slate-800 transition hover:text-orange-500"
           >
-            View Menu
+            View all
+            <ArrowRight size={15} />
           </Link>
-
         </div>
       </div>
     </section>
+  );
+}
+
+/* =========================================================
+   Feature
+========================================================= */
+
+function Feature({
+  icon,
+  title,
+  text,
+  border = false,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+  border?: boolean;
+}) {
+  return (
+    <div
+      className={`flex gap-3 ${
+        border ? "border-l border-slate-200 pl-4 sm:pl-5" : ""
+      }`}
+    >
+      <div className="mt-0.5 text-orange-500">{icon}</div>
+
+      <div>
+        <p className="text-xs font-bold text-slate-800 sm:text-sm">
+          {title}
+        </p>
+
+        <p className="mt-0.5 text-[10px] text-slate-400 sm:text-xs">
+          {text}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   Category
+========================================================= */
+
+function Category({
+  emoji,
+  title,
+}: {
+  emoji: string;
+  title: string;
+}) {
+  return (
+    <Link
+      href={`/menu?category=${title.toLowerCase()}`}
+      className="flex items-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-orange-100 hover:bg-orange-50 hover:text-orange-500"
+    >
+      <span>{emoji}</span>
+      {title}
+    </Link>
   );
 }
