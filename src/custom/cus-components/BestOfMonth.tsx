@@ -53,85 +53,189 @@ export default function BestOfMonth() {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+    <section className="mx-auto w-full">
       <div
         className="
-          bg-[#FFE5D2]
-          rounded-3xl
-          py-8 md:py-12
-          my-12
           relative
           overflow-hidden
+          bg-[#e3532b]
+          py-12
+          md:py-16
         "
       >
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Decorative background */}
 
-          {/* Header */}
-          <div className="text-left mb-10">
-            <div
-              className={`
-                ${chicle.className}
-                text-3xl md:text-4xl
-                text-[#2B2E4A]
-                uppercase
-                flex items-center
-                gap-3
-              `}
-            >
-              <FaStar className="text-[#EA9244]" />
-              Trending Foods
+        <div
+          className="
+            pointer-events-none
+            absolute
+            -left-32
+            top-[-120px]
+            h-80
+            w-80
+            rounded-full
+            bg-[#CDE9E1]/70
+            blur-3xl
+          "
+        />
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            -right-32
+            bottom-[-140px]
+            h-96
+            w-96
+            rounded-full
+            bg-[#F3C969]/20
+            blur-3xl
+          "
+        />
+
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+          {/* =====================================================
+              Header
+          ===================================================== */}
+
+          <div className="mb-10 flex items-end justify-between gap-6">
+            <div className="text-left">
+              <div
+                className={`
+                  ${chicle.className}
+                  flex
+                  items-center
+                  gap-3
+                  text-3xl
+                  uppercase
+                  leading-none
+                  text-[#16332F]
+                  md:text-4xl
+                `}
+              >
+                <span
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-[#F3C969]
+                    text-[#16332F]
+                    shadow-sm
+                    md:h-10
+                    md:w-10
+                  "
+                >
+                  <FaStar className="text-sm md:text-base" />
+                </span>
+
+                Trending Foods
+              </div>
+
+              <p className="mt-3 text-sm text-[#667A75]">
+                The most ordered dishes of the last 30 days
+              </p>
             </div>
 
-            <p className="text-[#6B6870] text-sm mt-2">
-              The most ordered dishes of the last 30 days
-            </p>
+            {/* Small label */}
+
+            <div
+              className="
+                hidden
+                rounded-full
+                border
+                border-[#168A78]/15
+                bg-white/70
+                px-4
+                py-2
+                text-[10px]
+                font-bold
+                uppercase
+                tracking-[0.18em]
+                text-[#168A78]
+                sm:block
+              "
+            >
+              Customer favourites
+            </div>
           </div>
 
-          {/* Left Arrow */}
+          {/* =====================================================
+              Left Arrow
+          ===================================================== */}
+
           <button
             onClick={() => scroll("left")}
             aria-label="Scroll left"
             className="
               absolute
-              left-3
-              top-[45%]
+              left-2
+              top-[53%]
               z-10
-              bg-white
-              text-[#EA9244]
-              p-3
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
               rounded-full
-              shadow-md
-              hover:bg-[#EA9244]
+              border
+              border-[#168A78]/10
+              bg-white
+              text-[#168A78]
+              shadow-lg
+              shadow-[#16332F]/10
+              transition-all
+              duration-200
+              hover:-translate-x-0.5
+              hover:bg-[#168A78]
               hover:text-white
-              transition
+              sm:left-3
             "
           >
-            <FaChevronLeft />
+            <FaChevronLeft size={14} />
           </button>
 
-          {/* Right Arrow */}
+          {/* =====================================================
+              Right Arrow
+          ===================================================== */}
+
           <button
             onClick={() => scroll("right")}
             aria-label="Scroll right"
             className="
               absolute
-              right-3
-              top-[45%]
+              right-2
+              top-[53%]
               z-10
-              bg-white
-              text-[#EA9244]
-              p-3
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
               rounded-full
-              shadow-md
-              hover:bg-[#EA9244]
+              border
+              border-[#168A78]/10
+              bg-white
+              text-[#168A78]
+              shadow-lg
+              shadow-[#16332F]/10
+              transition-all
+              duration-200
+              hover:translate-x-0.5
+              hover:bg-[#168A78]
               hover:text-white
-              transition
+              sm:right-3
             "
           >
-            <FaChevronRight />
+            <FaChevronRight size={14} />
           </button>
 
-          {/* Slider */}
+          {/* =====================================================
+              Slider
+          ===================================================== */}
+
           <div
             ref={scrollRef}
             className="
@@ -142,6 +246,8 @@ export default function BestOfMonth() {
               snap-x
               snap-mandatory
               scrollbar-hide
+              px-1
+              pb-3
             "
           >
             {featuredProducts.length > 0 ? (
@@ -160,23 +266,73 @@ export default function BestOfMonth() {
                   className="
                     min-w-[260px]
                     flex-shrink-0
-                    bg-white/70
-                    rounded-2xl
-                    p-6
                     animate-pulse
+                    rounded-3xl
+                    border
+                    border-white/70
+                    bg-white/80
+                    p-6
+                    shadow-sm
                   "
                 >
-                  <div className="h-4 bg-[#E8D5C5] rounded w-3/4 mb-3" />
-                  <div className="h-3 bg-[#E8D5C5] rounded w-1/2 mb-2" />
-                  <div className="h-3 bg-[#E8D5C5] rounded w-full mb-1" />
-                  <div className="h-3 bg-[#E8D5C5] rounded w-2/3" />
+                  <div
+                    className="
+                      mb-4
+                      h-4
+                      w-3/4
+                      rounded-full
+                      bg-[#D5E5E0]
+                    "
+                  />
+
+                  <div
+                    className="
+                      mb-3
+                      h-3
+                      w-1/2
+                      rounded-full
+                      bg-[#D5E5E0]
+                    "
+                  />
+
+                  <div
+                    className="
+                      mb-2
+                      h-3
+                      w-full
+                      rounded-full
+                      bg-[#D5E5E0]
+                    "
+                  />
+
+                  <div
+                    className="
+                      h-3
+                      w-2/3
+                      rounded-full
+                      bg-[#D5E5E0]
+                    "
+                  />
                 </div>
               ))
             )}
+          </div>
+
+          {/* =====================================================
+              Bottom accent
+          ===================================================== */}
+
+          <div className="mt-7 flex items-center gap-3">
+            <div className="h-1 w-10 rounded-full bg-[#168A78]" />
+
+            <div className="h-1 w-2 rounded-full bg-[#F3C969]" />
+
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#667A75]">
+              Loved by our customers
+            </p>
           </div>
         </div>
       </div>
     </section>
   );
 }
- 

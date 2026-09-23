@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Star,
 } from "lucide-react";
+import Cart from "./cart";
 
 export default function FoodHero() {
   return (
@@ -30,7 +31,7 @@ export default function FoodHero() {
 
             <div>
               <div className="text-xl font-black tracking-tight text-slate-900">
-                Foodly
+                Pizzeria
               </div>
               <div className="hidden text-[9px] font-semibold uppercase tracking-[0.22em] text-slate-400 sm:block">
                 Fresh food · Happy mood
@@ -39,7 +40,7 @@ export default function FoodHero() {
           </Link>
 
           {/* Desktop navigation */}
-          <nav className="hidden items-center gap-9 md:flex">
+          {/* <nav className="hidden items-center gap-9 md:flex">
             <Link
               href="/"
               className="relative text-sm font-semibold text-orange-500"
@@ -68,23 +69,14 @@ export default function FoodHero() {
             >
               Contact
             </Link>
-          </nav>
+          </nav> */}
 
           {/* Right */}
           <div className="flex items-center gap-3">
-            <Link
-              href="/cart"
-              className="relative flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-orange-200 hover:text-orange-500"
-            >
-              <ShoppingBag size={19} />
-
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[9px] font-bold text-white">
-                2
-              </span>
-            </Link>
+           <Cart />
 
             <Link
-              href="/menu"
+              href="/#order_now"
               className="hidden items-center gap-2 rounded-full bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600 hover:shadow-orange-300 sm:flex"
             >
               Order Now
@@ -96,11 +88,11 @@ export default function FoodHero() {
 
       {/* Hero */}
       <div className="relative z-10 mx-auto max-w-7xl px-5 pb-14 pt-8 sm:px-8 lg:px-10 lg:pb-20 lg:pt-10">
-        <div className="grid min-h-[650px] items-center gap-12 lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="grid min-h-[650px] items-center gap-2 md:gap-12 lg:grid-cols-[0.92fr_1.08fr]">
           {/* Left content */}
           <div className="relative z-10 max-w-xl">
             {/* Badge */}
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-600">
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-4 py-2 bg-gre text-sm font-semibold text-orange-600">
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white">
                 <Check size={12} strokeWidth={3} />
               </span>
@@ -109,7 +101,19 @@ export default function FoodHero() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-[clamp(3.2rem,6vw,5.8rem)] font-black leading-[0.92] tracking-[-0.055em] text-slate-900">
+              <h1 className="text-[clamp(3.2rem,6vw,5.8rem)] font-black leading-[0.92] tracking-[-0.055em] text-slate-900">
+              Pizzeria
+              <br />
+
+              <span className="text-orange-500">
+                Milano Segle
+              </span>
+
+              {/* <br />
+
+              together. */}
+            </h1>
+            {/* <h1 className="text-[clamp(3.2rem,6vw,5.8rem)] font-black leading-[0.92] tracking-[-0.055em] text-slate-900">
               Good food
               <br />
 
@@ -120,7 +124,7 @@ export default function FoodHero() {
               <br />
 
               together.
-            </h1>
+            </h1> */}
 
             {/* Description */}
             <p className="mt-7 max-w-lg text-base leading-7 text-slate-500 sm:text-lg">
@@ -132,7 +136,7 @@ export default function FoodHero() {
             {/* Buttons */}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/menu"
+                href="/#order_now"
                 className="group inline-flex items-center justify-center gap-3 rounded-full bg-orange-500 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-orange-200 transition hover:-translate-y-0.5 hover:bg-orange-600"
               >
                 Order Now
@@ -143,7 +147,7 @@ export default function FoodHero() {
               </Link>
 
               <Link
-                href="/menu"
+                href="/menu/#menu_list"
                 className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-7 py-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-orange-200 hover:text-orange-500"
               >
                 Explore Menu
@@ -184,12 +188,12 @@ export default function FoodHero() {
             {/* Food image */}
             <div className="relative z-10 w-full max-w-[620px]">
               <Image
-                src="/images/food-hero.png"
+                src="/images/hero-15.jpg"
                 alt="Fresh delicious food"
                 width={900}
                 height={900}
                 priority
-                className="h-auto w-full object-contain drop-shadow-[0_35px_35px_rgba(80,50,20,0.18)]"
+                className="h-auto rounded-full w-full object-contain drop-shadow-[0_35px_35px_rgba(80,50,20,0.18)]"
               />
             </div>
 
@@ -338,7 +342,7 @@ function Category({
 }) {
   return (
     <Link
-      href={`/menu?category=${title.toLowerCase()}`}
+      href={"/"}
       className="flex items-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-orange-100 hover:bg-orange-50 hover:text-orange-500"
     >
       <span>{emoji}</span>

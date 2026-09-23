@@ -121,7 +121,7 @@ const cardType = process.env.NEXT_PUBLIC_MENU_CARD_TYPE;
 
 
   return (
-    <section className="bg-white py-6  ">
+    <section id="menu_list" className="bg-white py-6  ">
       {/* Sticky Category Bar */}
       <div className="sticky top-13 z-50 bg-white border-b border-gray-200 shadow-sm overflow-x-auto">
         <div className="flex gap-4 px-4 py-3 max-w-6xl mx-auto whitespace-nowrap">

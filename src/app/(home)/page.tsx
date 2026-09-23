@@ -19,12 +19,12 @@ export default function Page() {
 
       {/* Sections */}
       <HeroSectionCustom />
-      <BestOfMonth />
+      
       <CategorySliderLight />
       <Suspense fallback={<div>Loading...</div>}>
         <ProductsWrapper />
       </Suspense>
-
+<BestOfMonth />
       {/* ✅ Server async component with streaming */}
       <Suspense fallback={<div className="h-40" />}>
         <ContactInfoWrapper />

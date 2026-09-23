@@ -217,7 +217,7 @@ const mappingData = await mappingRes.json();
   }
 
   return (
-    <div className="max-w-7xl mx-auto my-6">
+    <div id="productmenu" className="max-w-7xl mx-auto my-6">
       <div className="px-4 sm:px-6 lg:px-12">
         <div className={containerClass}>
           {products.map((product, i) => (
