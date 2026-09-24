@@ -37,112 +37,30 @@ const ProccedWithEmail = () => {
     },
   });
 
-  /*
-   * ---------------------------------------------------------
-   * Detect email
-   * ---------------------------------------------------------
-   */
-  function isEmail(value: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      value.trim()
-    );
-  }
-
-  /*
-   * ---------------------------------------------------------
-   * Normalize Indian mobile number
-   * ---------------------------------------------------------
-   *
-   * Examples:
-   *
-   * 9876543210
-   * +919876543210
-   * +91 9876543210
-   * +91-9876543210
-   *
-   * all become:
-   *
-   * 9876543210
-   * ---------------------------------------------------------
-   */
-  function normalizeMobile(value: string): string {
-    return value
-      .replace(/\D/g, "")
-      .replace(/^0+/, "")
-      .replace(/^91/, "");
-  }
-
-  /*
-   * ---------------------------------------------------------
-   * Normalize identifier before storing it in context
-   * ---------------------------------------------------------
-   *
-   * Email:
-   *     Customer@Gmail.com
-   *
-   * becomes:
-   *     Customer@Gmail.com
-   *
-   * Phone:
-   *     +91 98765 43210
-   *
-   * becomes:
-   *     9876543210
-   * ---------------------------------------------------------
-   */
-  function normalizeIdentifier(value: string): string {
-    const trimmed = value.trim();
-
-    if (isEmail(trimmed)) {
-      return trimmed;
-    }
-
-    return normalizeMobile(trimmed);
-  }
-
-  /*
-   * ---------------------------------------------------------
-   * Submit
-   * ---------------------------------------------------------
-   */
   async function onSubmit(data: TCustomerLookup) {
-    const identifier = normalizeIdentifier(
-      data.identifier
-    );
+    const identifier = data.identifier.trim();
 
     if (!identifier) {
       return;
     }
 
     /*
-     * customerEmailG is currently used as the shared
-     * customer identifier.
+     * customerEmailG currently stores the customer identifier.
      *
-     * It can contain:
+     * It can be:
+     * - email
+     * - mobile number
      *
-     *     email
-     *
-     * OR
-     *
-     *     mobile number
-     *
-     * The checkout Address component will determine
-     * which database lookup should be performed.
+     * The checkout address component decides which lookup
+     * should be performed.
      */
-    setCustomerAddressIsComplete(false);
 
-    console.log("customer email set-----------------", identifier)
+    setCustomerAddressIsComplete(false);
 
     setCustomerEmailG(identifier);
 
-    /*
-     * Close identifier modal.
-     */
     emailFormToggle(false);
 
-    /*
-     * Continue to checkout.
-     */
     router.push("/checkout");
   }
 
@@ -224,6 +142,8 @@ const ProccedWithEmail = () => {
           "
         >
           <div className="flex items-start gap-3">
+            {/* Contact icon */}
+
             <div
               className="
                 flex
@@ -307,16 +227,9 @@ const ProccedWithEmail = () => {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="
-            relative
-            px-6
-            pb-6
-            pt-6
-          "
+          className="relative px-6 pb-6 pt-6"
         >
-          {/* ===================================================
-              Identifier
-          =================================================== */}
+          {/* Identifier field */}
 
           <div className="flex flex-col gap-2.5">
             <label
@@ -354,12 +267,11 @@ const ProccedWithEmail = () => {
               <input
                 id="identifier"
                 type="text"
-                inputMode="text"
+                inputMode="email"
                 autoComplete="email"
                 {...register("identifier")}
                 placeholder="9876543210 or abc@gmail.com"
                 autoFocus
-                disabled={isSubmitting}
                 className="
                   h-13
                   w-full
@@ -379,13 +291,9 @@ const ProccedWithEmail = () => {
                   focus:border-[#F59E45]
                   focus:ring-4
                   focus:ring-[#F59E45]/10
-                  disabled:cursor-not-allowed
-                  disabled:bg-[#F8F2EC]
                 "
               />
             </div>
-
-            {/* Validation error */}
 
             {errors.identifier?.message && (
               <span
@@ -400,9 +308,7 @@ const ProccedWithEmail = () => {
             )}
           </div>
 
-          {/* ===================================================
-              Continue button
-          =================================================== */}
+          {/* Continue button */}
 
           <Button
             type="submit"
@@ -431,35 +337,29 @@ const ProccedWithEmail = () => {
             "
           >
             <span>
-              {isSubmitting
-                ? "Continuing..."
-                : "Continue"}
+              Continue
             </span>
 
-            {!isSubmitting && (
-              <span
-                className="
-                  ml-2
-                  flex
-                  h-7
-                  w-7
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-[#2B211B]/10
-                  transition-transform
-                  duration-200
-                  group-hover:translate-x-1
-                "
-              >
-                <FiArrowRight size={15} />
-              </span>
-            )}
+            <span
+              className="
+                ml-2
+                flex
+                h-7
+                w-7
+                items-center
+                justify-center
+                rounded-full
+                bg-[#2B211B]/10
+                transition-transform
+                duration-200
+                group-hover:translate-x-1
+              "
+            >
+              <FiArrowRight size={15} />
+            </span>
           </Button>
 
-          {/* ===================================================
-              Privacy / autofill information
-          =================================================== */}
+          {/* Privacy / autofill information */}
 
           <div
             className="

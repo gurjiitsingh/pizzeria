@@ -21,9 +21,9 @@ export default function FoodHero() {
       <div className="pointer-events-none absolute right-[-180px] top-[-120px] h-[520px] w-[520px] rounded-full bg-orange-200/30 blur-3xl" />
 
       {/* Header */}
-      <header className="relative z-20">
+      {/* <header className="relative z-20">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-          {/* Logo */}
+        
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-200">
               <ShoppingBag size={22} strokeWidth={2.2} />
@@ -39,8 +39,8 @@ export default function FoodHero() {
             </div>
           </Link>
 
-          {/* Desktop navigation */}
-          {/* <nav className="hidden items-center gap-9 md:flex">
+          
+           <nav className="hidden items-center gap-9 md:flex">
             <Link
               href="/"
               className="relative text-sm font-semibold text-orange-500"
@@ -69,11 +69,11 @@ export default function FoodHero() {
             >
               Contact
             </Link>
-          </nav> */}
+          </nav>
 
-          {/* Right */}
+       
           <div className="flex items-center gap-3">
-           <Cart />
+            <Cart />
 
             <Link
               href="/#order_now"
@@ -84,7 +84,7 @@ export default function FoodHero() {
             </Link>
           </div>
         </div>
-      </header>
+      </header> */}
 
       {/* Hero */}
       <div className="relative z-10 mx-auto max-w-7xl px-5 pb-14 pt-8 sm:px-8 lg:px-10 lg:pb-20 lg:pt-10">
@@ -92,7 +92,7 @@ export default function FoodHero() {
           {/* Left content */}
           <div className="relative z-10 max-w-xl">
             {/* Badge */}
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-4 py-2 bg-gre text-sm font-semibold text-orange-600">
+            <div className="hidden mb-7 md:inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-4 py-2 bg-gre text-sm font-semibold text-orange-600">
               <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white">
                 <Check size={12} strokeWidth={3} />
               </span>
@@ -101,7 +101,7 @@ export default function FoodHero() {
             </div>
 
             {/* Heading */}
-              <h1 className="text-[clamp(3.2rem,6vw,5.8rem)] font-black leading-[0.92] tracking-[-0.055em] text-slate-900">
+            <h1 className="text-[clamp(3.2rem,6vw,5.8rem)] font-black leading-[0.92] tracking-[-0.055em] text-slate-900">
               Pizzeria
               <br />
 
@@ -109,25 +109,16 @@ export default function FoodHero() {
                 Milano Segle
               </span>
 
-              {/* <br />
-
-              together. */}
+             
             </h1>
-            {/* <h1 className="text-[clamp(3.2rem,6vw,5.8rem)] font-black leading-[0.92] tracking-[-0.055em] text-slate-900">
-              Good food
-              <br />
-
-              <span className="text-orange-500">
-                brings people
-              </span>
-
-              <br />
-
-              together.
-            </h1> */}
+       
 
             {/* Description */}
-            <p className="mt-7 max-w-lg text-base leading-7 text-slate-500 sm:text-lg">
+             <p className="md:hidden   mt-7 max-w-lg text-base leading-7 text-slate-500 sm:text-lg">
+              Fresh ingredients, bold flavors, Order something delicious
+             
+            </p>
+            <p className="hidden md:block mt-7 max-w-lg text-base leading-7 text-slate-500 sm:text-lg">
               Fresh ingredients, bold flavors, and your favorite meals
               delivered straight to your door. Order something delicious
               today.
@@ -155,7 +146,7 @@ export default function FoodHero() {
             </div>
 
             {/* Features */}
-            <div className="mt-11 grid max-w-lg grid-cols-3 border-t border-slate-200 pt-6">
+            <div className="hidden mt-11 md:grid max-w-lg grid-cols-3 border-t border-slate-200 pt-6">
               <Feature
                 icon={<Clock3 size={18} />}
                 title="Fast Delivery"
@@ -310,9 +301,8 @@ function Feature({
 }) {
   return (
     <div
-      className={`flex gap-3 ${
-        border ? "border-l border-slate-200 pl-4 sm:pl-5" : ""
-      }`}
+      className={`flex gap-3 ${border ? "border-l border-slate-200 pl-4 sm:pl-5" : ""
+        }`}
     >
       <div className="mt-0.5 text-orange-500">{icon}</div>
 
