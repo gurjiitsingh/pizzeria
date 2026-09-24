@@ -15,77 +15,41 @@ import Cart from "./cart";
 
 export default function FoodHero() {
   return (
-    <section className="relative overflow-hidden pt-12 bg-[#fffaf5]">
+    <section className="relative overflow-hidden pt-12 bg-[#fcfaf9]">
       {/* Decorative background */}
       <div className="pointer-events-none absolute -left-40 top-20 h-96 w-96 rounded-full bg-orange-100/60 blur-3xl" />
       <div className="pointer-events-none absolute right-[-180px] top-[-120px] h-[520px] w-[520px] rounded-full bg-orange-200/30 blur-3xl" />
 
-      {/* Header */}
-      {/* <header className="relative z-20">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-        
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-200">
-              <ShoppingBag size={22} strokeWidth={2.2} />
-            </div>
 
-            <div>
-              <div className="text-xl font-black tracking-tight text-slate-900">
-                Pizzeria
-              </div>
-              <div className="hidden text-[9px] font-semibold uppercase tracking-[0.22em] text-slate-400 sm:block">
-                Fresh food · Happy mood
-              </div>
-            </div>
-          </Link>
+  {/* Decorative corner gradients */}
 
-          
-           <nav className="hidden items-center gap-9 md:flex">
-            <Link
-              href="/"
-              className="relative text-sm font-semibold text-orange-500"
-            >
-              Home
-              <span className="absolute -bottom-3 left-0 h-0.5 w-full rounded-full bg-orange-500" />
-            </Link>
+{/* Top-right orange glow */}
+<div
+  className="
+    pointer-events-none absolute
+    -right-36 -top-36
+    h-[470px] w-[470px]
+    rounded-full
+    bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.38)_0%,rgba(249,115,22,0.17)_35%,rgba(255,250,245,0)_72%)]
+    blur-2xl
+  "
+/>
 
-            <Link
-              href="/menu"
-              className="text-sm font-medium text-slate-600 transition hover:text-orange-500"
-            >
-              Menu
-            </Link>
+{/* Bottom-left orange glow */}
+<div
+  className="
+    pointer-events-none absolute
+    -bottom-44 -left-44
+    h-[540px] w-[540px]
+    rounded-full
+    bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.44)_0%,rgba(249,115,22,0.19)_35%,rgba(255,250,245,0)_72%)]
+    blur-2xl
+  "
+/>
 
-            <Link
-              href="/about"
-              className="text-sm font-medium text-slate-600 transition hover:text-orange-500"
-            >
-              About
-            </Link>
+{/* Hero */}
 
-            <Link
-              href="/contact"
-              className="text-sm font-medium text-slate-600 transition hover:text-orange-500"
-            >
-              Contact
-            </Link>
-          </nav>
-
-       
-          <div className="flex items-center gap-3">
-            <Cart />
-
-            <Link
-              href="/#order_now"
-              className="hidden items-center gap-2 rounded-full bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-200 transition hover:bg-orange-600 hover:shadow-orange-300 sm:flex"
-            >
-              Order Now
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </header> */}
-
+   
       {/* Hero */}
       <div className="relative z-10 mx-auto max-w-7xl px-5 pb-14 pt-8 sm:px-8 lg:px-10 lg:pb-20 lg:pt-10">
         <div className="grid min-h-[650px] items-center gap-2 md:gap-12 lg:grid-cols-[0.92fr_1.08fr]">
