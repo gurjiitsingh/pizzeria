@@ -75,7 +75,7 @@ export default function RootLayout({
               <BargerMenu />
               <Modal />
 
-              <div className="flex flex-col gap-0 my-0">
+              <div className="flex flex-col gap-0 my-0 bg-[#fffaf5]">
                 <div className="z-50">
                   <SafeSideCart />
                 </div>

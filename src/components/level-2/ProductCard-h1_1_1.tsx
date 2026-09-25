@@ -385,7 +385,7 @@ export default function ProductCardHorizontical({
               Total: {formatCurrencyNumber(finalPrice)}
             </p>
 
-            <div className="flex items-center justify-between my-2 gap-3">
+            <div className="flex items-center  my-2 gap-4">
                <button 
     onClick={() => setIsOpen(false)}
     className="p-2 rounded-lg bg-gray-200 hover:bg-gray-100"
