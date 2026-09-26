@@ -11,6 +11,11 @@ export async function POST(req: NextRequest) {
   const signature =
     req.headers.get("stripe-signature");
 
+    console.log(
+  "STRIPE_WEBHOOK_SECRET:",
+  process.env.STRIPE_WEBHOOK_SECRET
+);
+
   if (!signature) {
     return new NextResponse(
       "Missing Stripe signature",
@@ -25,7 +30,7 @@ export async function POST(req: NextRequest) {
   // =====================================================
   // VERIFY STRIPE WEBHOOK
   // =====================================================
-
+console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
   try {
     event =
       stripe.webhooks.constructEvent(
@@ -87,6 +92,7 @@ export async function POST(req: NextRequest) {
 
       const orderMasterId =
         session.metadata?.orderMasterId;
+        //"qfyIVsZxos4Go4M5DYWW"
 
       console.log(
         "Order ID:",
