@@ -174,13 +174,13 @@ export async function POST(req: NextRequest) {
 
       await orderRef.update({
 
-        paymentMode: "ONLINE",
+        paymentMode: "ONLINE1",
 
-        paymentProvider: "STRIPE",
+        paymentProvider: "STRIPE1",
 
-        paymentMethod: "CARD",
+        paymentMethod: "CARD1",
 
-        paymentStatus: "PAID",
+        paymentStatus: "PAID1",
 
         paidAmount,
 
