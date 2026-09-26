@@ -6,80 +6,14 @@ import { stripe } from "@/lib/stripe";
 import { adminDb } from "@/lib/firebaseAdmin";
 
 export async function POST(req: NextRequest) {
-  console.log("========================================");
-  console.log("STRIPE WEBHOOK POST RECEIVED");
-  console.log("========================================");
+  // =====================================================
+  // READ RAW BODY
+  // =====================================================
 
   const body = await req.text();
 
-  const signature = req.headers.get("stripe-signature");
-
-  console.log("BODY LENGTH:", body.length);
-  console.log("SIGNATURE EXISTS:", !!signature);
-  console.log(
-    "STRIPE_WEBHOOK_SECRET EXISTS:",
-    !!process.env.STRIPE_WEBHOOK_SECRET
-  );
-
-  // =====================================================
-  // 1. SAVE RAW WEBHOOK TEST DOCUMENT
-  // =====================================================
-
-  try {
-    const testRef = await adminDb
-      .collection("stripeWebhookDebug")
-      .add({
-        receivedAt:
-          admin.firestore.FieldValue.serverTimestamp(),
-
-        bodyLength: body.length,
-
-        signatureReceived: !!signature,
-
-        webhookSecretLoaded:
-          !!process.env.STRIPE_WEBHOOK_SECRET,
-
-        body: body,
-
-        signature: signature ?? null,
-
-        environment: process.env.NODE_ENV ?? null,
-
-        host:
-          req.headers.get("host") ?? null,
-
-        userAgent:
-          req.headers.get("user-agent") ?? null,
-      });
-
-    console.log(
-      "DEBUG FIRESTORE DOCUMENT CREATED:",
-      testRef.id
-    );
-  } catch (error) {
-    console.error(
-      "DEBUG FIRESTORE WRITE FAILED:",
-      error
-    );
-
-    return NextResponse.json(
-      {
-        received: false,
-        debugFirestore: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : String(error),
-      },
-      {
-        status: 500,
-      }
-    );
-  }
-
-  // =====================================================
-  // 2. CHECK SIGNATURE
-  // =====================================================
+  const signature =
+    req.headers.get("stripe-signature");
 
   if (!signature) {
     console.error(
@@ -108,7 +42,7 @@ export async function POST(req: NextRequest) {
   }
 
   // =====================================================
-  // 3. VERIFY STRIPE WEBHOOK
+  // VERIFY STRIPE WEBHOOK
   // =====================================================
 
   let event: Stripe.Event;
@@ -135,16 +69,13 @@ export async function POST(req: NextRequest) {
   }
 
   console.log(
-    "Stripe webhook signature VERIFIED"
-  );
-
-  console.log(
     "Stripe webhook received:",
-    event.type
+    event.type,
+    event.id
   );
 
   // =====================================================
-  // 4. HANDLE CHECKOUT COMPLETED
+  // HANDLE CHECKOUT COMPLETED
   // =====================================================
 
   switch (event.type) {
@@ -157,9 +88,9 @@ export async function POST(req: NextRequest) {
         session.id
       );
 
-      // -----------------------------------------------
-      // PAYMENT STATUS
-      // -----------------------------------------------
+      // =================================================
+      // VERIFY PAYMENT STATUS
+      // =================================================
 
       if (session.payment_status !== "paid") {
         console.log(
@@ -170,9 +101,9 @@ export async function POST(req: NextRequest) {
         break;
       }
 
-      // -----------------------------------------------
-      // ORDER ID
-      // -----------------------------------------------
+      // =================================================
+      // GET ORDER ID FROM STRIPE METADATA
+      // =================================================
 
       const orderMasterId =
         session.metadata?.orderMasterId;
@@ -182,68 +113,18 @@ export async function POST(req: NextRequest) {
         orderMasterId
       );
 
-      // -----------------------------------------------
-      // SAVE STRIPE EVENT DEBUG DATA
-      // -----------------------------------------------
-
-      try {
-        await adminDb
-          .collection("stripeWebhookEvents")
-          .add({
-            eventId: event.id,
-
-            eventType: event.type,
-
-            sessionId: session.id,
-
-            orderMasterId:
-              orderMasterId ?? null,
-
-            paymentStatus:
-              session.payment_status,
-
-            amountTotal:
-              session.amount_total ?? null,
-
-            currency:
-              session.currency ?? null,
-
-            metadata:
-              session.metadata ?? {},
-
-            livemode:
-              event.livemode,
-
-            stripeCreated:
-              event.created,
-
-            receivedAt:
-              admin.firestore.FieldValue
-                .serverTimestamp(),
-          });
-
-        console.log(
-          "STRIPE EVENT DEBUG DOCUMENT CREATED"
-        );
-      } catch (error) {
-        console.error(
-          "STRIPE EVENT DEBUG WRITE FAILED:",
-          error
-        );
-      }
-
-      // -----------------------------------------------
-      // MISSING ORDER ID
-      // -----------------------------------------------
-
       if (!orderMasterId) {
         console.error(
-          "Stripe Checkout Session is missing orderMasterId metadata."
+          "Stripe Checkout Session is missing orderMasterId metadata.",
+          {
+            sessionId: session.id,
+            eventId: event.id,
+          }
         );
 
-        // IMPORTANT:
-        // Return 200 so Stripe knows the webhook
-        // was received successfully.
+        // Event was received successfully.
+        // Do not make Stripe retry forever because
+        // application metadata is missing.
         return NextResponse.json({
           received: true,
           processed: false,
@@ -252,9 +133,9 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      // -----------------------------------------------
+      // =================================================
       // GET FIRESTORE ORDER
-      // -----------------------------------------------
+      // =================================================
 
       const orderRef =
         adminDb
@@ -266,7 +147,11 @@ export async function POST(req: NextRequest) {
 
       if (!orderSnap.exists) {
         console.error(
-          `Order not found: ${orderMasterId}`
+          `Order not found: ${orderMasterId}`,
+          {
+            sessionId: session.id,
+            eventId: event.id,
+          }
         );
 
         return NextResponse.json({
@@ -280,9 +165,9 @@ export async function POST(req: NextRequest) {
       const order =
         orderSnap.data();
 
-      // -----------------------------------------------
+      // =================================================
       // IDEMPOTENCY CHECK
-      // -----------------------------------------------
+      // =================================================
 
       if (
         order?.paymentStatus === "PAID"
@@ -294,9 +179,9 @@ export async function POST(req: NextRequest) {
         break;
       }
 
-      // -----------------------------------------------
+      // =================================================
       // AMOUNT
-      // -----------------------------------------------
+      // =================================================
 
       const grandTotal =
         Number(
@@ -315,36 +200,43 @@ export async function POST(req: NextRequest) {
         );
 
       console.log(
-        "Grand Total:",
-        grandTotal
+        "Order amount:",
+        {
+          grandTotal,
+          paidAmount,
+          dueAmount,
+          currency: session.currency,
+        }
       );
 
-      console.log(
-        "Paid Amount:",
-        paidAmount
-      );
-
-      console.log(
-        "Due Amount:",
-        dueAmount
-      );
-
-      // -----------------------------------------------
-      // UPDATE FIRESTORE
-      // -----------------------------------------------
+      // =================================================
+      // UPDATE ORDER
+      // =================================================
 
       await orderRef.update({
-        paymentMode: "ONLINE1",
+        paymentMode: "ONLINE",
 
-        paymentProvider: "STRIPE1",
+        paymentProvider: "STRIPE",
 
-        paymentMethod: "CARD1",
+        paymentMethod: "CARD",
 
-        paymentStatus: "PAID1",
+        paymentStatus: "PAID",
 
         paidAmount,
 
         dueAmount,
+
+        stripeSessionId:
+          session.id,
+
+        stripePaymentIntentId:
+          typeof session.payment_intent ===
+          "string"
+            ? session.payment_intent
+            : null,
+
+        stripeEventId:
+          event.id,
 
         updatedAt:
           admin.firestore.FieldValue
@@ -352,7 +244,7 @@ export async function POST(req: NextRequest) {
       });
 
       console.log(
-        `Order ${orderMasterId} marked as PAID.`
+        `Order ${orderMasterId} marked as PAID successfully.`
       );
 
       break;
@@ -368,11 +260,10 @@ export async function POST(req: NextRequest) {
   }
 
   // =====================================================
-  // 5. SUCCESS
+  // STRIPE SUCCESS RESPONSE
   // =====================================================
 
   return NextResponse.json({
     received: true,
-    processed: true,
   });
 }
