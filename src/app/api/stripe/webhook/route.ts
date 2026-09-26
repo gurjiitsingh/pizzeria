@@ -6,17 +6,86 @@ import { stripe } from "@/lib/stripe";
 import { adminDb } from "@/lib/firebaseAdmin";
 
 export async function POST(req: NextRequest) {
+  console.log("========================================");
+  console.log("STRIPE WEBHOOK POST RECEIVED");
+  console.log("========================================");
+
   const body = await req.text();
 
-  const signature =
-    req.headers.get("stripe-signature");
+  const signature = req.headers.get("stripe-signature");
+
+  console.log("BODY LENGTH:", body.length);
+  console.log("SIGNATURE EXISTS:", !!signature);
+  console.log(
+    "STRIPE_WEBHOOK_SECRET EXISTS:",
+    !!process.env.STRIPE_WEBHOOK_SECRET
+  );
+
+  // =====================================================
+  // 1. SAVE RAW WEBHOOK TEST DOCUMENT
+  // =====================================================
+
+  try {
+    const testRef = await adminDb
+      .collection("stripeWebhookDebug")
+      .add({
+        receivedAt:
+          admin.firestore.FieldValue.serverTimestamp(),
+
+        bodyLength: body.length,
+
+        signatureReceived: !!signature,
+
+        webhookSecretLoaded:
+          !!process.env.STRIPE_WEBHOOK_SECRET,
+
+        body: body,
+
+        signature: signature ?? null,
+
+        environment: process.env.NODE_ENV ?? null,
+
+        host:
+          req.headers.get("host") ?? null,
+
+        userAgent:
+          req.headers.get("user-agent") ?? null,
+      });
 
     console.log(
-  "STRIPE_WEBHOOK_SECRET:",
-  process.env.STRIPE_WEBHOOK_SECRET
-);
+      "DEBUG FIRESTORE DOCUMENT CREATED:",
+      testRef.id
+    );
+  } catch (error) {
+    console.error(
+      "DEBUG FIRESTORE WRITE FAILED:",
+      error
+    );
+
+    return NextResponse.json(
+      {
+        received: false,
+        debugFirestore: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : String(error),
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+
+  // =====================================================
+  // 2. CHECK SIGNATURE
+  // =====================================================
 
   if (!signature) {
+    console.error(
+      "Stripe webhook signature is missing."
+    );
+
     return new NextResponse(
       "Missing Stripe signature",
       {
@@ -25,18 +94,31 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let event: Stripe.Event;
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error(
+      "STRIPE_WEBHOOK_SECRET is missing."
+    );
+
+    return new NextResponse(
+      "Stripe webhook secret is missing",
+      {
+        status: 500,
+      }
+    );
+  }
 
   // =====================================================
-  // VERIFY STRIPE WEBHOOK
+  // 3. VERIFY STRIPE WEBHOOK
   // =====================================================
-console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
+
+  let event: Stripe.Event;
+
   try {
     event =
       stripe.webhooks.constructEvent(
         body,
         signature,
-        process.env.STRIPE_WEBHOOK_SECRET!
+        process.env.STRIPE_WEBHOOK_SECRET
       );
   } catch (error) {
     console.error(
@@ -53,18 +135,20 @@ console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
   }
 
   console.log(
+    "Stripe webhook signature VERIFIED"
+  );
+
+  console.log(
     "Stripe webhook received:",
     event.type
   );
 
   // =====================================================
-  // HANDLE CHECKOUT COMPLETED
+  // 4. HANDLE CHECKOUT COMPLETED
   // =====================================================
 
   switch (event.type) {
-
     case "checkout.session.completed": {
-
       const session =
         event.data.object as Stripe.Checkout.Session;
 
@@ -74,12 +158,12 @@ console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
       );
 
       // -----------------------------------------------
-      // VERIFY PAYMENT STATUS
+      // PAYMENT STATUS
       // -----------------------------------------------
 
       if (session.payment_status !== "paid") {
         console.log(
-          "Checkout completed but payment is not marked as paid:",
+          "Checkout completed but payment is not paid:",
           session.payment_status
         );
 
@@ -87,29 +171,85 @@ console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
       }
 
       // -----------------------------------------------
-      // GET ORDER ID
+      // ORDER ID
       // -----------------------------------------------
 
       const orderMasterId =
         session.metadata?.orderMasterId;
-        //"qfyIVsZxos4Go4M5DYWW"
 
       console.log(
         "Order ID:",
         orderMasterId
       );
 
+      // -----------------------------------------------
+      // SAVE STRIPE EVENT DEBUG DATA
+      // -----------------------------------------------
+
+      try {
+        await adminDb
+          .collection("stripeWebhookEvents")
+          .add({
+            eventId: event.id,
+
+            eventType: event.type,
+
+            sessionId: session.id,
+
+            orderMasterId:
+              orderMasterId ?? null,
+
+            paymentStatus:
+              session.payment_status,
+
+            amountTotal:
+              session.amount_total ?? null,
+
+            currency:
+              session.currency ?? null,
+
+            metadata:
+              session.metadata ?? {},
+
+            livemode:
+              event.livemode,
+
+            stripeCreated:
+              event.created,
+
+            receivedAt:
+              admin.firestore.FieldValue
+                .serverTimestamp(),
+          });
+
+        console.log(
+          "STRIPE EVENT DEBUG DOCUMENT CREATED"
+        );
+      } catch (error) {
+        console.error(
+          "STRIPE EVENT DEBUG WRITE FAILED:",
+          error
+        );
+      }
+
+      // -----------------------------------------------
+      // MISSING ORDER ID
+      // -----------------------------------------------
+
       if (!orderMasterId) {
         console.error(
           "Stripe Checkout Session is missing orderMasterId metadata."
         );
 
-        return new NextResponse(
-          "Missing orderMasterId",
-          {
-            status: 400,
-          }
-        );
+        // IMPORTANT:
+        // Return 200 so Stripe knows the webhook
+        // was received successfully.
+        return NextResponse.json({
+          received: true,
+          processed: false,
+          reason:
+            "Missing orderMasterId metadata",
+        });
       }
 
       // -----------------------------------------------
@@ -129,12 +269,12 @@ console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
           `Order not found: ${orderMasterId}`
         );
 
-        return new NextResponse(
-          "Order not found",
-          {
-            status: 404,
-          }
-        );
+        return NextResponse.json({
+          received: true,
+          processed: false,
+          reason: "Order not found",
+          orderMasterId,
+        });
       }
 
       const order =
@@ -174,12 +314,26 @@ console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
           0
         );
 
+      console.log(
+        "Grand Total:",
+        grandTotal
+      );
+
+      console.log(
+        "Paid Amount:",
+        paidAmount
+      );
+
+      console.log(
+        "Due Amount:",
+        dueAmount
+      );
+
       // -----------------------------------------------
       // UPDATE FIRESTORE
       // -----------------------------------------------
 
       await orderRef.update({
-
         paymentMode: "ONLINE1",
 
         paymentProvider: "STRIPE1",
@@ -195,7 +349,6 @@ console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
         updatedAt:
           admin.firestore.FieldValue
             .serverTimestamp(),
-
       });
 
       console.log(
@@ -206,7 +359,6 @@ console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
     }
 
     default: {
-
       console.log(
         `Unhandled Stripe event: ${event.type}`
       );
@@ -215,7 +367,12 @@ console.log("STRIPE_WEBHOOK_SECRET:", process.env.STRIPE_WEBHOOK_SECRET);
     }
   }
 
+  // =====================================================
+  // 5. SUCCESS
+  // =====================================================
+
   return NextResponse.json({
     received: true,
+    processed: true,
   });
 }
