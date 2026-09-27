@@ -21,6 +21,7 @@ import { getActiveVehicleTrip } from "../getActiveVehicleTrip";
 import { updateCustomerAccount } from "../../stock-finished/inventorySupplier/updateCustomerAccount";
 import { applyCustomerTransaction } from "../../stock-finished/customer/applyCustomerTransaction";
 import { applyCustomerTransactionNew } from "../../stock-finished/customer/applyCustomerTransactionNew";
+import { upateFinishedStockAfterSale } from "./upateFinishedStockAfterSale";
 
 
 
@@ -30,6 +31,7 @@ import { applyCustomerTransactionNew } from "../../stock-finished/customer/apply
 // =====================================================
 
 type DeliveryTruckSaleProps = {
+  saleDate: string;
   vehicleId: string;
   vehicleName: string;
 
@@ -67,6 +69,7 @@ type DeliveryTruckSaleProps = {
 // =====================================================
 
 export async function saveDeiveryTruckSale({
+  saleDate,
   vehicleId,
   vehicleName,
 
@@ -358,6 +361,43 @@ export async function saveDeiveryTruckSale({
       }
 
 
+     // ===============================================
+      // REMOVE FROM MAIN STOCK, FINISHED PRODUCTS
+      // ===============================================
+
+      for (const item of items) {
+        await upateFinishedStockAfterSale(
+          tx,
+          {
+            productId: item.productId,
+
+            type: "SALE",
+            direction: "OUT",
+
+            quantity: item.quantity,
+            transactionUnit: "kg",
+
+            unitPrice: 500,
+            totalAmount,
+
+            paidAmount,
+            dueAmount,
+
+            paymentStatus,
+            paymentMethod,
+
+            referenceId: "dummy",
+            referenceType: "sale",
+
+            note: "",
+            createdBy:
+              createdBy || "admin",
+
+            source: createdBy || "ADMIN",
+          }
+        );
+      }
+
       // =================================================
       // 7. CREATE SALE MASTER
       // =================================================
@@ -393,9 +433,13 @@ export async function saveDeiveryTruckSale({
           paymentMethod,
 
           remarks,
+          saleDate,
           createdBy,
         }
       );
+
+
+ 
 
 
       // =================================================
@@ -432,6 +476,8 @@ export async function saveDeiveryTruckSale({
           quantity:
             -quantity,
         });
+
+
 
 
         // ===============================================
@@ -488,12 +534,12 @@ export async function saveDeiveryTruckSale({
             wholeSaleCutomerId,
 
           remarks,
-
+saleDate,
           createdBy,
         });
 
 
-        
+
 
         // ===============================================
         // COST / PROFIT SNAPSHOT
@@ -654,7 +700,7 @@ export async function saveDeiveryTruckSale({
         }
       );
 
-       
+
 
       // =================================================
       // 11. UPDATE TRIP SUMMARY

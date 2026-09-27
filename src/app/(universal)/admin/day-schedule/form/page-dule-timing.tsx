@@ -7,7 +7,6 @@ import {
   getSchedule,
   saveDaySchedule,
 } from "@/app/(universal)/action/schedule/saveDaySchedule";
-import toast from "react-hot-toast";
 
 type DaySchedule = {
   day: string;
@@ -241,15 +240,10 @@ export default function ScheduleForm() {
           String(day.isOpen)
         );
 
-        // formData.append(
-        //   `schedule[${realIndex}][fullDay]`,
-        //   String(day.fullDay)
-        // );
         formData.append(
-  `schedule[${realIndex}][fullDay]`,
-  "true"
-);
-
+          `schedule[${realIndex}][fullDay]`,
+          String(day.fullDay)
+        );
 
         formData.append(
           `schedule[${realIndex}][amOpen]`,
@@ -275,18 +269,22 @@ export default function ScheduleForm() {
       const res = await saveDaySchedule(formData);
 
       if (!res?.success) {
-    toast.error(res?.error || "Failed to save schedule.");
+        alert(
+          res?.error || "❌ Failed to save schedule"
+        );
         return;
       }
 
-    toast.success("Schedule saved successfully.");
+      alert("✅ Schedule saved successfully");
     } catch (error) {
       console.error(
         "❌ Schedule save error:",
         error
       );
 
-      toast.error("Something went wrong while saving the schedule.");
+      alert(
+        "❌ Something went wrong while saving the schedule."
+      );
     } finally {
       // Always restore button
       setIsSaving(false);
@@ -299,7 +297,7 @@ export default function ScheduleForm() {
       className="w-full max-w-4xl mx-auto p-5"
     >
       <h1 className="text-2xl font-semibold mb-4">
-        Order Timings
+        Food Ordering Timings
       </h1>
 
       {/* Same timing for all days */}
@@ -337,8 +335,8 @@ export default function ScheduleForm() {
               value={day.day}
             />
 
-         
-            {/* <div className="flex justify-between mb-3">
+            {/* Header */}
+            <div className="flex justify-between mb-3">
               <h3 className="capitalize font-semibold">
                 {day.day}
               </h3>
@@ -366,7 +364,7 @@ export default function ScheduleForm() {
               </div>
             </div>
 
-          
+            {/* Timing */}
             {day.isOpen && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <input
@@ -405,69 +403,20 @@ export default function ScheduleForm() {
                   </>
                 )}
               </div>
-            )} */}
-<div className="flex justify-between mb-3">
-  <h3 className="capitalize font-semibold">
-    {day.day}
-  </h3>
-
-  <label className="flex items-center gap-2">
-    <input
-      type="checkbox"
-      {...register(
-        `schedule.${realIndex}.isOpen`
-      )}
-    />
-    Open
-  </label>
-</div>
-
-{day.isOpen && (
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label className="block text-sm font-medium mb-1">
-        Opening Time
-      </label>
-
-      <input
-        type="time"
-        className="w-full rounded-lg border bg-white px-3 py-2"
-        {...register(
-          `schedule.${realIndex}.amOpen`
-        )}
-      />
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium mb-1">
-        Closing Time
-      </label>
-
-      <input
-        type="time"
-        className="w-full rounded-lg border bg-white px-3 py-2"
-        {...register(
-          `schedule.${realIndex}.amClose`
-        )}
-      />
-    </div>
-  </div>
-)}
-
-
+            )}
           </div>
         );
       })}
 
       {/* Save button */}
       <Button
-        className="mt-6 w-full bg-red-600 text-white font-bold"
+        className="mt-6 w-full"
         type="submit"
         disabled={isSaving}
       >
         {isSaving ? (
           <span className="flex items-center justify-center gap-2">
-            <span className="h-4 w-4 animate-spin  rounded-full border-2 border-current border-t-transparent" />
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             Saving Schedule...
           </span>
         ) : (
