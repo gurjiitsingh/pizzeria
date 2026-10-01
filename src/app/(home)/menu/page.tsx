@@ -24,10 +24,10 @@ export default function Page() {
 
   return (
     <>
-    <main className=" text-gray-900 font-sans">
+    <main className=" text-gray-900 font-sans mt-20  pb-40">
     
         
-          <HeroSectionCustom />
+      
           <ProductMenuList />
           {/* <ProductCategorySliderList />
           <Products /> */}

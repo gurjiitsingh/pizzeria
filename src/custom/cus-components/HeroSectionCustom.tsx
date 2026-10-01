@@ -90,6 +90,12 @@ export default function FoodHero() {
 
             {/* Buttons */}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+               <Link
+                href="/menu"
+                className="inline-flex items-center justify-center rounded-full font-bold border border-slate-200 bg-white px-7 py-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-orange-200 hover:text-orange-500"
+              >
+         Menú Explorar
+              </Link>
               <Link
                 href="/#order_now"
                 className="group inline-flex items-center justify-center gap-3 rounded-full bg-orange-500 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-orange-200 transition hover:-translate-y-0.5 hover:bg-orange-600"
@@ -101,12 +107,7 @@ export default function FoodHero() {
                 </span>
               </Link>
 
-              <Link
-                href="/menu/#menu_list"
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-7 py-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-orange-200 hover:text-orange-500"
-              >
-                Explore Menu
-              </Link>
+             
             </div>
 
             {/* Features */}
