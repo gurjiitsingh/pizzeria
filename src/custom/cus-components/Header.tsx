@@ -114,7 +114,7 @@ const Header = () => {
 
           {/* Navigation */}
           <div className="ml-8">
-            <Navbar scrolled={scrolled} />
+            <Navbar  />
           </div>
         </div>
 

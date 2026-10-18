@@ -1,6 +1,6 @@
 'use client'
 
-import HeroText from "@/components/level-2/HeroText";
+ 
 import Title from "@/custom/cus-components/Title";
 import SearchForm from "@/custom/cus-components/SearchForm";
 
