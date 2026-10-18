@@ -10,7 +10,7 @@ import { fetchCategories } from "@/app/(universal)/action/category/dbOperations"
 import { UseSiteContext } from "@/SiteContext/SiteContext";
 import { TEXT } from "@/config/languages";
 
-import { Cinzel, Lato, Roboto, Poppins } from "next/font/google";
+import { Cinzel, Lato,   Poppins } from "next/font/google";
 
 const cinzel = Cinzel({
   subsets: ["latin"],

@@ -22,15 +22,9 @@ const poppins = Poppins({
   weight: ["400", "600", "700"], // choose what you need
 });
 
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["400", "700"], 
-});
+ 
 
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"], 
-});
+ 
 
 
 export default function CategorySlider1() {
