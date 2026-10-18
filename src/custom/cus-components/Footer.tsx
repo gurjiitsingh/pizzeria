@@ -196,7 +196,7 @@ export default function Footer({ outlet }: Props) {
   // =======================================================
 
   return (
-    <footer className="relative mt-20 overflow-hidden rounded-t-[3rem] bg-[#2b2e4a] text-white">
+    <footer className="relative  overflow-hidden rounded-t-[3rem] bg-[#2b2e4a] text-white">
       {/* ===================================================
           Decorative background
       =================================================== */}

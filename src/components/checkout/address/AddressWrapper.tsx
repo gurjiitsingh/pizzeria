@@ -1,10 +1,14 @@
-import AddressIN from "./AddressIN";
-import AddressDE from "./AddressDE";
-import AddressAll from "./AddressAll";
+//import AddressIN from "./AddressIN";
+//import AddressDE from "./AddressDE";
+import AddressES from "./AddressES";
+//import AddressAll from "./AddressAll";
  
 
-export default function AddressWrapper({ country }: { country: "IN" | "DE" | "ALL" }) {
-   if (country === "ALL") return <AddressAll />;
-  if (country === "IN") return <AddressIN />;
-  return <AddressDE />;
+export default function AddressWrapper() {
+    return <AddressES />;
 }
+
+
+// export default function AddressWrapper({ country }: { country: "IN" | "DE" | "ALL" }) {
+//     return <AddressES />;
+// }

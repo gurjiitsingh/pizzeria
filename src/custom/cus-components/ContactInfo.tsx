@@ -1,245 +1,152 @@
 "use client";
 
-import {
-  FaMapMarkedAlt,
-  FaPhoneAlt,
-  FaEnvelope,
-  FaCalendarAlt,
-} from "react-icons/fa";
+import React from "react";
+import { Clock, MapPin, Phone, Mail, MessageCircle } from "lucide-react";
 
-export default function ContactInfo({
-  outlet,
-  schedule,
-}: any) {
-  if (!outlet) return null;
-
-  return (
-    <section className="relative overflow-hidden bg-[#fffaf5] px-5 py-20 sm:px-8 md:py-28 lg:px-10">
-      {/* =====================================================
-          Decorative Background
-      ====================================================== */}
-
-      <div className="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-[#ffe5d2]/70 blur-3xl" />
-
-      <div className="pointer-events-none absolute -right-32 bottom-0 h-80 w-80 rounded-full bg-orange-100/60 blur-3xl" />
-
-      {/* =====================================================
-          Content
-      ====================================================== */}
-
-      <div className="relative z-10 mx-auto max-w-7xl">
-        {/* ===================================================
-            Section Heading
-        ==================================================== */}
-
-        <div className="mx-auto mb-14 max-w-2xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-[#ea9244]">
-            <span className="h-px w-8 bg-[#ea9244]" />
-
-            Get in touch
-
-            <span className="h-px w-8 bg-[#ea9244]" />
-          </div>
-
-          <h2 className="text-3xl font-black tracking-[-0.035em] text-[#2b2e4a] sm:text-4xl md:text-5xl">
-            We would love to
-            <span className="text-[#ea9244]"> hear from you.</span>
-          </h2>
-
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-slate-500 sm:text-base">
-            Visit us, give us a call, or simply send us an email.
-            We are always happy to help and make your experience
-            delicious.
-          </p>
-        </div>
-
-        {/* ===================================================
-            Information Cards
-        ==================================================== */}
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {/* =================================================
-              Address
-          ================================================== */}
-
-          <ContactCard
-            icon={<FaMapMarkedAlt />}
-            title="Address"
-          >
-            <div className="space-y-1 text-sm leading-6 text-slate-500">
-              {outlet.outletName && (
-                <p className="font-semibold text-[#2b2e4a]">
-                  {outlet.outletName}
-                </p>
-              )}
-
-              {outlet.addressLine1 && (
-                <p>{outlet.addressLine1}</p>
-              )}
-
-              {outlet.addressLine2 && (
-                <p>{outlet.addressLine2}</p>
-              )}
-
-              {outlet.city && <p>{outlet.city}</p>}
-            </div>
-
-            {outlet.addressLine1 && (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  [
-                    outlet.addressLine1,
-                    outlet.addressLine2,
-                    outlet.city,
-                  ]
-                    .filter(Boolean)
-                    .join(", ")
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-[#ea9244] transition hover:gap-2.5"
-              >
-                Get Directions
-                <span>→</span>
-              </a>
-            )}
-          </ContactCard>
-
-          {/* =================================================
-              Phone
-          ================================================== */}
-
-          <ContactCard
-            icon={<FaPhoneAlt />}
-            title="Phone"
-          >
-            <div className="space-y-2 text-sm text-slate-500">
-              {outlet.phone ? (
-                <a
-                  href={`tel:${outlet.phone}`}
-                  className="block transition hover:text-[#ea9244]"
-                >
-                  {outlet.phone}
-                </a>
-              ) : (
-                <p>-</p>
-              )}
-
-              {outlet.phone2 && (
-                <a
-                  href={`tel:${outlet.phone2}`}
-                  className="block transition hover:text-[#ea9244]"
-                >
-                  {outlet.phone2}
-                </a>
-              )}
-            </div>
-
-            {outlet.phone && (
-              <a
-                href={`tel:${outlet.phone}`}
-                className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-[#ea9244] transition hover:gap-2.5"
-              >
-                Call us
-                <span>→</span>
-              </a>
-            )}
-          </ContactCard>
-
-          {/* =================================================
-              Email
-          ================================================== */}
-
-          <ContactCard
-            icon={<FaEnvelope />}
-            title="Email"
-          >
-            {outlet.email ? (
-              <>
-                <a
-                  href={`mailto:${outlet.email}`}
-                  className="break-all text-sm leading-6 text-slate-500 transition hover:text-[#ea9244]"
-                >
-                  {outlet.email}
-                </a>
-
-                <a
-                  href={`mailto:${outlet.email}`}
-                  className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-[#ea9244] transition hover:gap-2.5"
-                >
-                  Send a message
-                  <span>→</span>
-                </a>
-              </>
-            ) : (
-              <p className="text-sm text-slate-500">-</p>
-            )}
-          </ContactCard>
-
-          {/* =================================================
-              Opening Hours
-          ================================================== */}
-
-          <ContactCard
-            icon={<FaCalendarAlt />}
-            title="Opening Hours"
-          >
-            <div className="max-h-48 space-y-1.5 overflow-y-auto pr-1 text-sm text-slate-500">
-              {schedule && schedule.length > 0 ? (
-                schedule.map((line: string, i: number) => (
-                  <p
-                    key={i}
-                    className="leading-5"
-                  >
-                    {line}
-                  </p>
-                ))
-              ) : (
-                <p>No schedule available</p>
-              )}
-            </div>
-          </ContactCard>
-        </div>
-      </div>
-    </section>
-  );
+interface ScheduleItem {
+  day: string;
+  time: string;
+  isOpen: boolean;
 }
 
-// =========================================================
-// Contact Card
-// =========================================================
+interface ContactInfoProps {
+  outlet: any;
+  schedule: ScheduleItem[] | string[];
+}
 
-function ContactCard({
-  icon,
-  title,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-}) {
+export default function ContactInfo({ outlet, schedule }: ContactInfoProps) {
   return (
-    <div className="group relative flex min-h-[260px] flex-col rounded-[2rem] border border-slate-100 bg-white p-7 shadow-[0_10px_40px_rgba(43,46,74,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-orange-100 hover:shadow-[0_18px_50px_rgba(43,46,74,0.09)]">
-      {/* Top accent */}
-      <div className="absolute left-7 right-7 top-0 h-1 rounded-b-full bg-[#ea9244] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-      {/* Icon */}
-      <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff1e7] text-[#ea9244] transition-all duration-300 group-hover:bg-[#ea9244] group-hover:text-white">
-        <span className="text-lg">
-          {icon}
-        </span>
+    <div className=" max-w-7xl mx-auto py-5">
+      {/* Section Header */}
+      <div className="mb-12 text-center">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-500/25 bg-amber-950/30 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-300">
+          Visítanos & Contáctanos
+        </div>
+        <h2 className="font-serif text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+          Location &{" "}
+          <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+            Opening Hours
+          </span>
+        </h2>
+        <p className="mt-2 font-serif italic text-sm text-amber-200/70 sm:text-base">
+          El auténtico sabor italiano, listo para servirte
+        </p>
       </div>
 
-      {/* Title */}
-      <h3 className="mb-4 text-sm font-black uppercase tracking-[0.13em] text-[#2b2e4a]">
-        {title}
-      </h3>
+      {/* Main Grid: Outlet details on left, Schedule card on right */}
+      <div className="grid gap-8 lg:grid-cols-2">
+        
+        {/* Left: Store Information Card */}
+        <div className="flex flex-col justify-between rounded-3xl border border-amber-500/25 bg-[#121318]/80 p-8 shadow-[0_10px_35px_rgba(0,0,0,0.6)] backdrop-blur-md">
+          <div>
+            <h3 className="font-serif text-2xl font-bold text-white">
+              {outlet?.name || "Pizzeria Milano Segle"}
+            </h3>
+            <p className="mt-1 text-sm text-stone-400">
+              Fresh artisanal pizza crafted every day with authentic Italian tradition.
+            </p>
 
-      {/* Content */}
-      <div className="flex-1">
-        {children}
+            <div className="mt-8 space-y-6">
+              {/* Address */}
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                  <MapPin size={20} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300">Address</h4>
+                  <p className="mt-0.5 text-sm leading-relaxed text-stone-300">
+                    {outlet?.address || "C/ del Segle XX, 9, 08041 Barcelona"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Phone / WhatsApp */}
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                  <Phone size={20} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300">Telephone</h4>
+                  <p className="mt-0.5 text-sm font-semibold text-stone-200">
+                    {outlet?.phone || "+34 931 416 841 / 670 569 090"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Email */}
+              {outlet?.email && (
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                    <Mail size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300">Email</h4>
+                    <p className="mt-0.5 text-sm text-stone-300">{outlet.email}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Action Button */}
+          <div className="mt-8 border-t border-amber-500/15 pt-6">
+            <a
+              href={`https://wa.me/${outlet?.whatsapp || "34931416841"}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 px-6 py-3.5 text-sm font-bold text-black shadow-[0_0_20px_rgba(245,158,11,0.35)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(245,158,11,0.55)]"
+            >
+              <MessageCircle size={18} />
+              <span>Haz Tu Pedido Por WhatsApp</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Right: Horario / Schedule Card */}
+        <div className="rounded-3xl border border-amber-500/25 bg-[#121318]/80 p-8 shadow-[0_10px_35px_rgba(0,0,0,0.6)] backdrop-blur-md">
+          <div className="flex items-center gap-3 border-b border-amber-500/20 pb-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
+              <Clock size={19} />
+            </div>
+            <div>
+              <h3 className="font-serif text-xl font-bold text-white">Opening Schedule</h3>
+              <p className="text-xs text-stone-400">Horario de apertura y servicio a domicilio</p>
+            </div>
+          </div>
+
+          <div className="mt-6 divide-y divide-amber-500/10">
+            {Array.isArray(schedule) && schedule.length > 0 ? (
+              schedule.map((item, idx) => {
+                const isObj = typeof item === "object";
+                const dayName = isObj ? item.day : item.split(":")[0];
+                const timeString = isObj ? item.time : item.split(":")[1]?.trim();
+                const isClosed = isObj ? !item.isOpen : timeString?.toLowerCase().includes("closed");
+
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between py-3.5 text-sm transition hover:bg-amber-500/5 px-2 rounded-lg"
+                  >
+                    <span className="font-medium text-stone-300">{dayName}</span>
+                    <span
+                      className={`text-xs font-semibold tracking-wide ${
+                        isClosed
+                          ? "rounded-md border border-red-500/30 bg-red-950/40 px-2 py-0.5 text-red-400"
+                          : "text-amber-300"
+                      }`}
+                    >
+                      {timeString}
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="py-6 text-center text-sm text-stone-500">No schedule available</p>
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );
 }
- 
