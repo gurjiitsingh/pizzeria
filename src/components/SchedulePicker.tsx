@@ -161,6 +161,7 @@ const getSlots = () => {
       >
         {!selectedDate && <option>Select day first</option>}
         {slots.length === 0 && selectedDate && <option>Store closed</option>}
+        <option key={"kjsljfslkfklowjenview"} value="">Select Time</option>
         {slots.map((t) => (
           <option key={t} value={t}>
             {t}
