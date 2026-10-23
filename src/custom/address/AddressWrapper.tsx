@@ -1,14 +1,26 @@
-//import AddressIN from "./AddressIN";
-//import AddressDE from "./AddressDE";
+
+import { auth } from "@/auth";
 import AddressES from "./AddressES";
-//import AddressAll from "./AddressAll";
+import CustomerAddressBook from "./CustomerAddressBook";
+import { getCustomerAddresses } from "@/modules/customer-account/addresses/actions";
+
+export default async function AddressWrapper() {
+  const session = await auth();
+  const userId = session?.user?.id;
+  const role = session?.user?.role;
+
  
 
-export default function AddressWrapper() {
+  if (role !== "user" || !userId) {
     return <AddressES />;
+  }
+
+  const addresses = await getCustomerAddresses(userId);
+
+  return (
+    <CustomerAddressBook
+      userId={userId}
+      addresses={addresses}
+    />
+  );
 }
-
-
-// export default function AddressWrapper({ country }: { country: "IN" | "DE" | "ALL" }) {
-//     return <AddressES />;
-// }

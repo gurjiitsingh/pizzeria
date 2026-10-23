@@ -11,6 +11,9 @@ import Image from "next/image";
 import { useState } from "react";
 import type { TnewModifierItemSchema } from "@/lib/types/modifierItemType";
 import { IoClose } from "react-icons/io5";
+
+import CartButtonAddINDE from "@/custom/CartBottom/CartButtonAddINDE";
+import CompositCatButton from "@/custom/CartBottom/CompositCatButton";
 export default function ProductCardHorizontical({
   product,
   variants,
@@ -244,7 +247,7 @@ export default function ProductCardHorizontical({
   </button>
 
   {/* Add - primary */}
-  <CartButtonAdd
+  <CartButtonAddINDE
     cartProduct={{
       ...cartProduct,
       note: "",
@@ -260,176 +263,227 @@ export default function ProductCardHorizontical({
       </div>
     </div>
 
-    {isOpen && (
-      <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-0 rounded-xl">
+  
+{isOpen && (
+  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-3 sm:p-4">
+    <div className="flex max-h-[85dvh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
 
-        <div className="bg-white w-[400px] max-full ">
+      {/* HEADER */}
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
+        <h2 className="truncate pr-3 text-lg font-bold text-slate-900">
+          {product.name}
+        </h2>
 
-          <div className="bg-white w-[400px] max-h-[75vh] overflow-y-auto rounded-xl p-4 pb-2">
-            <h2 className="text-lg font-bold mb-3">{product.name}</h2>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          aria-label="Close modifiers"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-700 transition hover:bg-slate-200"
+        >
+          <IoClose size={21} />
+        </button>
+      </div>
 
-            {/* VARIANTS */}
-            {productVariants.map((variant) => (
-              <label
-                key={variant.id}
-                onClick={() => setSelectedVariant(variant)}
-                className={`flex justify-between items-center p-2 rounded cursor-pointer ${selectedVariant?.id === variant.id ? "bg-gray-100" : ""
-                  }`}
-              >
+      {/* SCROLLABLE VARIANTS AND MODIFIERS */}
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
 
-                <div className="flex gap-2">
-                  <input
-                    type="radio"
-                    name="size"
-                    checked={selectedVariant?.id === variant.id}
-                    onChange={() => setSelectedVariant(variant)}
-                  />
-
-                  <span>{variant.name}</span>
-                </div>
-
-                <span className="text-sm text-gray-600">
-                  {formatCurrencyNumber(
-                    variant.price ?? 0,
-                    //  settings.currency,
-                    //  settings.locale
-                  )}
-                </span>
-              </label>
-            ))}
-
-            {/* ✅ MODIFIERS HERE (INSIDE POPUP) */}
-            {productModifierGroups.length > 0 && (
-              <div className="mb-4">
-                {productModifierGroups.map((groupData) => (
-                  <div key={groupData.group.id} className="mb-3">
-
-                    <p className="font-semibold">
-                      {groupData.group.name}
-                    </p>
-
-                    <p className="text-xs text-gray-500">
-                      Min: {groupData.group.minSelection} | Max: {groupData.group.maxSelection}
-                    </p>
-
-                  {groupData.items.map((item: ModifierItem) => {
-                      const selectedItems = selectedModifiers[groupData.group.id] || [];
-
-                      const isChecked = selectedItems.some((i) => i.id === item.id);
-
-                      const handleChange = () => {
-                        setSelectedModifiers((prev) => {
-                          const prevItems = prev[groupData.group.id] || [];
-                          let updated = [...prevItems];
-
-                          if (groupData.group.maxSelection === 1) {
-                            updated = [item];
-                          } else {
-                            const exists = prevItems.some((i) => i.id === item.id);
-
-                            if (exists) {
-                              updated = prevItems.filter((i) => i.id !== item.id);
-                            } else if (prevItems.length < groupData.group.maxSelection) {
-                              updated.push(item);
-                            }
-                          }
-
-                          return {
-                            ...prev,
-                            [groupData.group.id]: updated,
-                          };
-                        });
-                      };
-
-                      return (
-                        <label key={item.id} className="flex justify-between items-center py-1">
-                          <span>{item.name}</span>
-
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm">+{item.price}</span>
-
-                            <input
-                              type={groupData.group.maxSelection === 1 ? "radio" : "checkbox"}
-                              checked={isChecked}
-                              onChange={handleChange}
-                            />
-                          </div>
-                        </label>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-            )}
-
-
-          </div>
-
-          <div className="p-4">
-
-            {/* 📝 NOTE INPUT */}
-            <div className="p-0">
-              <label className="text-sm font-medium text-gray-700 my-1">
-                Add Note (optional)
-              </label>
-
-              <textarea
-                value={popupNote}
-                onChange={(e) => setPopupNote(e.target.value)}
-                placeholder="e.g. less spicy, no onion..."
-                className="w-full mt-1 p-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black resize-none"
-                rows={2}
+        {/* VARIANTS */}
+        {productVariants.map((variant) => (
+          <label
+            key={variant.id}
+            onClick={() => setSelectedVariant(variant)}
+            className={`mb-1 flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors ${
+              selectedVariant?.id === variant.id
+                ? "bg-orange-50"
+                : "hover:bg-slate-50"
+            }`}
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <input
+                type="radio"
+                name={`size-${product.id}`}
+                checked={selectedVariant?.id === variant.id}
+                onChange={() => setSelectedVariant(variant)}
+                className="h-4 w-4 accent-orange-600"
               />
+
+              <span className="text-sm font-medium text-slate-800">
+                {variant.name}
+              </span>
             </div>
-            <p className="font-semibold text-right">
-              Total: {formatCurrencyNumber(finalPrice)}
-            </p>
 
-            <div className="flex items-center justify-between my-2 gap-3">
-               <button 
-    onClick={() => setIsOpen(false)}
-    className="p-2 rounded-lg bg-gray-200 hover:bg-gray-100"
-  >
-    <IoClose size={20} />
-  </button>
+            <span className="shrink-0 text-sm font-semibold text-slate-700">
+              {formatCurrencyNumber(variant.price ?? 0)}
+            </span>
+          </label>
+        ))}
 
-              <div className="">
-                <CartButtonAdd
-                  cartProduct={{
-                    id: selectedVariant?.id ?? product.id,
-                    uniqueKey: uniqueKey,
-                    price: finalPrice,
-                    basePrice: selectedVariant?.price ?? product.price ?? 0,
-                    name: selectedVariant?.name ?? product.name,
+        {/* MODIFIERS */}
+        {productModifierGroups.length > 0 && (
+          <div className="mt-3">
+            {productModifierGroups.map((groupData) => (
+              <div
+                key={groupData.group.id}
+                className="mb-3 border-b border-slate-100 pb-2 last:border-b-0"
+              >
+                {/* MODIFIER GROUP TITLE */}
+                <p className="text-sm font-bold text-slate-900">
+                  {groupData.group.name}
+                </p>
 
-                    quantity: 1,
-                    currentStock: selectedVariant?.currentStock?? product.currentStock!,
+                <p className="mt-0.5 mb-1 text-xs font-medium text-slate-600">
+                  Min: {groupData.group.minSelection} | Max:{" "}
+                  {groupData.group.maxSelection}
+                </p>
 
-                    image: product.image,
-                    categoryId: product.categoryId,
-                    productCat: product.productCat!,
+                {/* MODIFIER ITEMS */}
+                {groupData.items.map((item: ModifierItem) => {
+                  const selectedItems =
+                    selectedModifiers[groupData.group.id] || [];
 
-                    taxRate: selectedProduct.taxRate,
-                    taxType: selectedProduct.taxType,
+                  const isChecked = selectedItems.some(
+                    (i) => i.id === item.id
+                  );
 
-                    parentProductId: product.id,
+                  const handleChange = () => {
+                    setSelectedModifiers((prev) => {
+                      const prevItems =
+                        prev[groupData.group.id] || [];
 
-                    modifiers: Object.values(selectedModifiers).flat(),
+                      let updated = [...prevItems];
 
-                    note: popupNote,
-                  }}
-                />
+                      if (groupData.group.maxSelection === 1) {
+                        updated = isChecked ? [] : [item];
+                      } else {
+                        const exists = prevItems.some(
+                          (i) => i.id === item.id
+                        );
+
+                        if (exists) {
+                          updated = prevItems.filter(
+                            (i) => i.id !== item.id
+                          );
+                        } else if (
+                          prevItems.length <
+                          groupData.group.maxSelection
+                        ) {
+                          updated.push(item);
+                        }
+                      }
+
+                      return {
+                        ...prev,
+                        [groupData.group.id]: updated,
+                      };
+                    });
+                  };
+
+                  return (
+                    <label
+                      key={item.id}
+                      className={`flex min-h-9 cursor-pointer items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors ${
+                        isChecked
+                          ? "bg-orange-50"
+                          : "hover:bg-slate-50"
+                      }`}
+                    >
+                      <span className="min-w-0 flex-1 text-sm font-medium text-slate-800">
+                        {item.name}
+                      </span>
+
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="text-sm font-semibold text-slate-700">
+                          +
+                          {formatCurrencyNumber(
+                            item.price ?? 0
+                          )}
+                        </span>
+
+                        <input
+                          type={
+                            groupData.group.maxSelection === 1
+                              ? "radio"
+                              : "checkbox"
+                          }
+                          name={`modifier-${groupData.group.id}`}
+                          checked={isChecked}
+                          onChange={handleChange}
+                          className="h-4 w-4 accent-orange-600"
+                        />
+                      </div>
+                    </label>
+                  );
+                })}
               </div>
+            ))}
+          </div>
+        )}
+      </div>
 
+      {/* FIXED FOOTER: NOTE, TOTAL AND ADD TO CART */}
+      <div className="shrink-0 border-t border-slate-200 bg-white px-4 pb-3 pt-3">
 
-            </div>
+        {/* NOTE INPUT */}
+        <div>
+          <label className="mb-1 block text-sm font-semibold text-slate-800">
+            Add Note (optional)
+          </label>
 
+          <textarea
+            value={popupNote}
+            onChange={(e) => setPopupNote(e.target.value)}
+            placeholder="e.g. less spicy, no onion..."
+            className="w-full resize-none rounded-lg border border-slate-300 bg-white p-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            rows={2}
+          />
+        </div>
 
+        {/* TOTAL */}
+        <p className="mt-2 text-right text-base font-bold text-slate-900">
+          Total: {formatCurrencyNumber(finalPrice)}
+        </p>
+
+        {/* ACTIONS */}
+        <div className="my-2 flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close popup"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition hover:bg-slate-200"
+          >
+            <IoClose size={21} />
+          </button>
+
+          <div className="min-w-0 flex-1">
+           <CompositCatButton
+  selectQuantity
+  onAdded={() => setIsOpen(false)} 
+  cartProduct={{
+    id: selectedVariant?.id ?? product.id,
+    uniqueKey: uniqueKey,
+    price: finalPrice,
+    basePrice: selectedVariant?.price ?? product.price ?? 0,
+    name: selectedVariant?.name ?? product.name,
+    quantity: 1,
+    currentStock:
+      selectedVariant?.currentStock ?? product.currentStock!,
+    image: product.image,
+    categoryId: product.categoryId,
+    productCat: product.productCat!,
+    taxRate: selectedProduct.taxRate,
+    taxType: selectedProduct.taxType,
+    parentProductId: product.id,
+    modifiers: Object.values(selectedModifiers).flat(),
+    note: popupNote,
+  }}
+/>
           </div>
         </div>
-      </div >
-    )
-    }
+      </div>
+    </div>
+  </div>
+)}
+
 
     {
       simpleNoteOpen && (

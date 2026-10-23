@@ -5,7 +5,8 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { addOnType } from "@/lib/types/addOnType";
 import { ProductType } from "@/lib/types/productType";
-
+import ProdcutCardHorizontical from "../level-2/ProductMenuCard-h1_5";
+ 
 
 
 export default function ProductMenuList() {
@@ -47,79 +48,10 @@ const [addOns, setAddOns] = useState<addOnType[]>([]);
     }
   };
 
-const cardType = process.env.NEXT_PUBLIC_MENU_CARD_TYPE;
-
-   const Card = useMemo(() => {
-      switch (cardType) {
-        case "1":
-          return dynamic(() => import("../level-2/ProductCard-h1"));
-           case "11":
-          return dynamic(() => import("../level-2/ProductCard-h1_1"));
-        case "13":
-          return dynamic(() => import("../level-2/ProductCard-h1_3"));
-  
-        case "14":
-          return dynamic(() => import("../level-2/ProductMenuCard-h1_4"));
-        case "15":
-          return dynamic(() => import("../level-2/ProductMenuCard-h1_5"));
-        case "12":
-          return dynamic(
-            () => import("@/custom/cus-components/ProductCard-custom")
-          );
-        case "19":
-          return dynamic(() => import("../level-2/ProductCard-h12"));
-        case "2":
-          return dynamic(() => import("../level-2/ProductCard-v2"));
-        case "3":
-          return dynamic(() => import("../level-2/ProductCard-v3"));
-        case "4":
-          return dynamic(() => import("../level-2/ProductCard-v4"));
-        case "5":
-          return dynamic(() => import("../level-2/ProductCard-v5"));
-        case "6":
-          return dynamic(() => import("../level-2/ProductCard-h6"));
-        case "7":
-          return dynamic(() => import("../level-2/ProductCard-v7"));
-        default:
-          return dynamic(() => import("../level-2/ProductCard-h1"));
-      }
-    }, [cardType]);
 
 
-    //  Layout logic (unchanged)
-  let containerClass = "";
-  switch (cardType) {
-    case "1":
-      containerClass = "flex flex-col md:flex-row md:flex-wrap gap-3 md:gap-5 ";
-      break;
-    case "11":
-      containerClass = "flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-2";
-      break;
-    case "12":
-      containerClass = "flex flex-col md:flex-row md:flex-wrap gap-3 md:gap-5";
-      break;
-    case "2":
-    case "3":
-      containerClass =
-        "flex flex-col md:flex-row md:flex-wrap gap-3 md:gap-5 justify-center";
-      break;
-    case "4":
-      containerClass = "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3";
-      break;
-    case "5":
-      containerClass = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3";
-      break;
-    case "6":
-      containerClass = "flex flex-col md:flex-row md:flex-wrap gap-3 md:gap-5";
-      break;
-    case "7":
-      containerClass = "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3";
-      break;
-    default:
-      containerClass = "flex flex-col md:flex-row md:flex-wrap gap-3 md:gap-5";
-  }
 
-
+let containerClass = "flex flex-col md:flex-row md:flex-wrap gap-3 md:gap-5";
   return (
     <section className="bg-white py-6  ">
       {/* Sticky Category Bar */}
@@ -150,15 +82,15 @@ const cardType = process.env.NEXT_PUBLIC_MENU_CARD_TYPE;
             {/* Product Grid */}
            <div id="bf" className="max-w-6xl mx-auto my-6">
       <div className="px-2">
-        <div className={containerClass}>
+         <div className={containerClass}>
               {products.map((product, i) => (
-            <Card
+            <ProdcutCardHorizontical
               key={product.id ?? `${product.name}-${i}`}
               product={product}
               allAddOns={addOns}
             />
           ))}
-            </div>
+            </div> 
   </div>  </div>
 
 
