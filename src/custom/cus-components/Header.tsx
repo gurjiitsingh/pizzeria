@@ -10,6 +10,7 @@ import Navbar from "@/components/level-2/Navbar";
 import Login from "../../components/buttons/Login";
 import { LanguageSwitcher } from "../../languages/LanguageSwitcher";
 import Cart from "./cart";
+import UserAccountMenu from "@/app/user/components/UserAccountMenu";
 
 
 export const headerFlags = {
@@ -124,13 +125,14 @@ const Header = () => {
           {/* {headerFlags.SHOW_LANGUAGE_SWITCHER && <LanguageSwitcher />} */}
 
           {/* Cart */}
-          <Cart />
+          {/* <Cart /> */}
 
           {/* Login */}
+          <UserAccountMenu />
           {headerFlags.SHOW_LOGIN_BUTTON && <Login />}
 
-          {/* Order Now */}
-          <Link
+       
+          {/* <Link
             href="/#order_now"
             className="
               hidden items-center gap-2
@@ -148,7 +150,7 @@ const Header = () => {
           >
             Order Now
             <ArrowRight size={16} />
-          </Link>
+          </Link> */}
         </div>
       </div>
     </header>

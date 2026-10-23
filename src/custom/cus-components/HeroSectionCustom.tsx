@@ -110,24 +110,29 @@ export default function HeroSection() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link
-                href="/#order_now"
-                className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 px-8 py-3.5 text-base font-bold text-black shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_35px_rgba(245,158,11,0.65)]"
-              >
-                <span>Order Now</span>
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/15 transition-transform group-hover:translate-x-1">
-                  <ArrowRight size={14} className="stroke-[2.5]" />
-                </span>
-              </Link>
+         
+{/* CTA Buttons */}
+<div className="relative z-30 mt-8 flex flex-wrap items-center gap-4">
+  <Link
+    href="/#order_now"
+    prefetch={false}
+    className="group relative z-30 inline-flex min-h-12 touch-manipulation cursor-pointer items-center gap-3 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 px-8 py-3.5 text-base font-bold text-black shadow-[0_0_25px_rgba(245,158,11,0.45)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_35px_rgba(245,158,11,0.65)]"
+  >
+    <span>Order Now</span>
+    <span className="pointer-events-none flex h-6 w-6 items-center justify-center rounded-full bg-black/15">
+      <ArrowRight size={14} className="stroke-[2.5]" />
+    </span>
+  </Link>
 
-              <Link
-                href="/menu"
-                className="inline-flex items-center justify-center rounded-full border border-amber-500/40 bg-[#121318]/90 px-8 py-3.5 text-base font-semibold text-amber-200 backdrop-blur-md transition-all duration-300 hover:border-amber-400 hover:bg-amber-950/60 hover:text-white hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]"
-              >
-                Menú Explorar
-              </Link>
-            </div>
+  <Link
+    href="/menu"
+    prefetch={false}
+    className="relative z-30 inline-flex min-h-12 touch-manipulation cursor-pointer items-center justify-center rounded-full border border-amber-500/40 bg-[#121318]/90 px-8 py-3.5 text-base font-semibold text-amber-200 backdrop-blur-md transition-all duration-300 hover:border-amber-400 hover:bg-amber-950/60 hover:text-white hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+  >
+    Menú Explorar
+  </Link>
+</div>
+
 
             {/* Feature Icons Section */}
             <div className="mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-amber-500/20 pt-6">
@@ -163,7 +168,7 @@ export default function HeroSection() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
                 <Star size={18} fill="currentColor" />
               </div>
-              <div>
+              {/* <div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm font-black text-white">4.9 / 5.0</span>
                   <div className="flex text-amber-400">
@@ -173,7 +178,7 @@ export default function HeroSection() {
                   </div>
                 </div>
                 <p className="text-[11px] font-medium text-slate-300">2,000+ happy customers</p>
-              </div>
+              </div> */}
             </div>
 
           </div>

@@ -174,367 +174,389 @@ export default function ProductCardHorizontical({
   });
 
   // ---------------- UI ----------------
-  return (<>
-    <div className="flex flex-col gap-2 bg-white w-full md:w-[49%] rounded-2xl shadow-sm p-3">
+
+return (
+  <>
+    {/* PRODUCT CARD */}
+    <div className="flex w-full flex-col gap-3 rounded-2xl border border-amber-500/20 bg-[#14151a] p-3.5 shadow-[0_5px_18px_rgba(0,0,0,0.22)] transition duration-200 hover:border-amber-500/45 sm:p-4 md:w-[49%]">
       {/* PRODUCT HEADER */}
-      <div className="flex gap-4">
-        <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100">
+      <div className="flex gap-3.5 sm:gap-4">
+        {/* PRODUCT IMAGE */}
+        <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#202127] sm:h-24 sm:w-24">
           {product.image && (
             <Image
               src={product.image}
               alt={product.name}
-              width={80}
-              height={80}
-              className="object-cover"
+              width={96}
+              height={96}
+              className="h-full w-full object-cover"
             />
           )}
         </div>
 
-        <div className="flex-1">
-          <h3 className="font-semibold">{product.name}</h3>
-          <p className="text-sm text-gray-500">{product.productDesc}</p>
+        {/* PRODUCT DETAILS */}
+        <div className="min-w-0 flex-1">
+          <h3 className="break-words font-serif text-base font-bold leading-snug text-white sm:text-lg">
+            {product.name}
+          </h3>
+
+          {product.productDesc && (
+            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
+              {product.productDesc}
+            </p>
+          )}
+
+          {/* PRICE AND ACTIONS */}
           {shouldOpenPopup ? (
-            <div className="flex justify-between mt-2">
-              <div>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <div className="min-w-0">
                 {priceDiscounted ? (
-                  <>
-                    <span className="font-bold">{priceDiscounted}</span>
-                    <span className="line-through ml-2 text-sm">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <span className="text-base font-extrabold text-amber-300 sm:text-lg">
+                      {priceDiscounted}
+                    </span>
+                    <span className="text-xs text-slate-400 line-through sm:text-sm">
                       {priceRegular}
                     </span>
-                  </>
+                  </div>
                 ) : (
-                  <span>{priceRegular}</span>
+                  <span className="text-base font-extrabold text-amber-300 sm:text-lg">
+                    {priceRegular}
+                  </span>
                 )}
               </div>
 
-              <div className="bg-[#F3F2F0] px-[3px] pt-[1px] pb-[3px]  rounded-lg">
-                <button
-                  onClick={() => setIsOpen(true)}
-                  className=" w-[70px] px-1 py-1 rounded-lg bg-white font-bold text-gray-400  flex items-center justify-center"
-                >
-                  Add
-                </button>
-              </div>
-
-
+              <button
+                type="button"
+                onClick={() => setIsOpen(true)}
+                className="min-h-9 min-w-[76px] shrink-0 rounded-lg border border-amber-400/50 bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-sm font-extrabold text-[#17120a] shadow-sm transition hover:from-amber-300 hover:to-orange-400 active:scale-[0.97] touch-manipulation"
+              >
+                Add +
+              </button>
             </div>
           ) : (
-            <div className="flex justify-between mt-2">
-              <div>
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0">
                 {priceDiscounted ? (
-                  <>
-                    <span className="font-bold">{priceDiscounted}</span>
-                    <span className="line-through ml-2 text-sm">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                    <span className="text-base font-extrabold text-amber-300 sm:text-lg">
+                      {priceDiscounted}
+                    </span>
+                    <span className="text-xs text-slate-400 line-through sm:text-sm">
                       {priceRegular}
                     </span>
-                  </>
+                  </div>
                 ) : (
-                  <span>{priceRegular}</span>
+                  <span className="text-base font-extrabold text-amber-300 sm:text-lg">
+                    {priceRegular}
+                  </span>
                 )}
               </div>
-             <div className="flex items-center gap-2">
 
-  {/* Note - secondary */}
-  <button
-    onClick={() => {
-      setQuickNote("");
-      setSimpleNoteOpen(true);
-    }}
-    className="text-gray-500 text-xs hover:text-gray-700 transition"
-  >
-    + Note
-  </button>
+              <div className="flex items-center gap-3">
+                {/* NOTE - SECONDARY */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuickNote("");
+                    setSimpleNoteOpen(true);
+                  }}
+                  className="whitespace-nowrap text-xs font-semibold text-slate-300 underline decoration-amber-500/50 underline-offset-4 transition hover:text-amber-300 touch-manipulation"
+                >
+                  + Note
+                </button>
 
-  {/* Add - primary */}
-  <CartButtonAddINDE
-    cartProduct={{
-      ...cartProduct,
-      note: "",
-      uniqueKey: product.id.toString(),
-    }}
-  />
-</div>
-            </div>
-
-          )}
-
-        </div>
-      </div>
-    </div>
-
-  
-{isOpen && (
-  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-3 sm:p-4">
-    <div className="flex max-h-[85dvh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
-
-      {/* HEADER */}
-      <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
-        <h2 className="truncate pr-3 text-lg font-bold text-slate-900">
-          {product.name}
-        </h2>
-
-        <button
-          type="button"
-          onClick={() => setIsOpen(false)}
-          aria-label="Close modifiers"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-700 transition hover:bg-slate-200"
-        >
-          <IoClose size={21} />
-        </button>
-      </div>
-
-      {/* SCROLLABLE VARIANTS AND MODIFIERS */}
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
-
-        {/* VARIANTS */}
-        {productVariants.map((variant) => (
-          <label
-            key={variant.id}
-            onClick={() => setSelectedVariant(variant)}
-            className={`mb-1 flex cursor-pointer items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors ${
-              selectedVariant?.id === variant.id
-                ? "bg-orange-50"
-                : "hover:bg-slate-50"
-            }`}
-          >
-            <div className="flex min-w-0 items-center gap-2">
-              <input
-                type="radio"
-                name={`size-${product.id}`}
-                checked={selectedVariant?.id === variant.id}
-                onChange={() => setSelectedVariant(variant)}
-                className="h-4 w-4 accent-orange-600"
-              />
-
-              <span className="text-sm font-medium text-slate-800">
-                {variant.name}
-              </span>
-            </div>
-
-            <span className="shrink-0 text-sm font-semibold text-slate-700">
-              {formatCurrencyNumber(variant.price ?? 0)}
-            </span>
-          </label>
-        ))}
-
-        {/* MODIFIERS */}
-        {productModifierGroups.length > 0 && (
-          <div className="mt-3">
-            {productModifierGroups.map((groupData) => (
-              <div
-                key={groupData.group.id}
-                className="mb-3 border-b border-slate-100 pb-2 last:border-b-0"
-              >
-                {/* MODIFIER GROUP TITLE */}
-                <p className="text-sm font-bold text-slate-900">
-                  {groupData.group.name}
-                </p>
-
-                <p className="mt-0.5 mb-1 text-xs font-medium text-slate-600">
-                  Min: {groupData.group.minSelection} | Max:{" "}
-                  {groupData.group.maxSelection}
-                </p>
-
-                {/* MODIFIER ITEMS */}
-                {groupData.items.map((item: ModifierItem) => {
-                  const selectedItems =
-                    selectedModifiers[groupData.group.id] || [];
-
-                  const isChecked = selectedItems.some(
-                    (i) => i.id === item.id
-                  );
-
-                  const handleChange = () => {
-                    setSelectedModifiers((prev) => {
-                      const prevItems =
-                        prev[groupData.group.id] || [];
-
-                      let updated = [...prevItems];
-
-                      if (groupData.group.maxSelection === 1) {
-                        updated = isChecked ? [] : [item];
-                      } else {
-                        const exists = prevItems.some(
-                          (i) => i.id === item.id
-                        );
-
-                        if (exists) {
-                          updated = prevItems.filter(
-                            (i) => i.id !== item.id
-                          );
-                        } else if (
-                          prevItems.length <
-                          groupData.group.maxSelection
-                        ) {
-                          updated.push(item);
-                        }
-                      }
-
-                      return {
-                        ...prev,
-                        [groupData.group.id]: updated,
-                      };
-                    });
-                  };
-
-                  return (
-                    <label
-                      key={item.id}
-                      className={`flex min-h-9 cursor-pointer items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors ${
-                        isChecked
-                          ? "bg-orange-50"
-                          : "hover:bg-slate-50"
-                      }`}
-                    >
-                      <span className="min-w-0 flex-1 text-sm font-medium text-slate-800">
-                        {item.name}
-                      </span>
-
-                      <div className="flex shrink-0 items-center gap-2">
-                        <span className="text-sm font-semibold text-slate-700">
-                          +
-                          {formatCurrencyNumber(
-                            item.price ?? 0
-                          )}
-                        </span>
-
-                        <input
-                          type={
-                            groupData.group.maxSelection === 1
-                              ? "radio"
-                              : "checkbox"
-                          }
-                          name={`modifier-${groupData.group.id}`}
-                          checked={isChecked}
-                          onChange={handleChange}
-                          className="h-4 w-4 accent-orange-600"
-                        />
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* FIXED FOOTER: NOTE, TOTAL AND ADD TO CART */}
-      <div className="shrink-0 border-t border-slate-200 bg-white px-4 pb-3 pt-3">
-
-        {/* NOTE INPUT */}
-        <div>
-          <label className="mb-1 block text-sm font-semibold text-slate-800">
-            Add Note (optional)
-          </label>
-
-          <textarea
-            value={popupNote}
-            onChange={(e) => setPopupNote(e.target.value)}
-            placeholder="e.g. less spicy, no onion..."
-            className="w-full resize-none rounded-lg border border-slate-300 bg-white p-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            rows={2}
-          />
-        </div>
-
-        {/* TOTAL */}
-        <p className="mt-2 text-right text-base font-bold text-slate-900">
-          Total: {formatCurrencyNumber(finalPrice)}
-        </p>
-
-        {/* ACTIONS */}
-        <div className="my-2 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            aria-label="Close popup"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition hover:bg-slate-200"
-          >
-            <IoClose size={21} />
-          </button>
-
-          <div className="min-w-0 flex-1">
-           <CompositCatButton
-  selectQuantity
-  onAdded={() => setIsOpen(false)} 
-  cartProduct={{
-    id: selectedVariant?.id ?? product.id,
-    uniqueKey: uniqueKey,
-    price: finalPrice,
-    basePrice: selectedVariant?.price ?? product.price ?? 0,
-    name: selectedVariant?.name ?? product.name,
-    quantity: 1,
-    currentStock:
-      selectedVariant?.currentStock ?? product.currentStock!,
-    image: product.image,
-    categoryId: product.categoryId,
-    productCat: product.productCat!,
-    taxRate: selectedProduct.taxRate,
-    taxType: selectedProduct.taxType,
-    parentProductId: product.id,
-    modifiers: Object.values(selectedModifiers).flat(),
-    note: popupNote,
-  }}
-/>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
-    {
-      simpleNoteOpen && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
-          <div className="bg-white w-[350px] rounded-xl p-5 shadow-lg">
-
-            {/* Title */}
-            <h2 className="font-semibold text-lg mb-3 text-gray-800">
-              {product.name}
-            </h2>
-
-            {/* Textarea */}
-            <textarea
-              value={quickNote}
-              onChange={(e) => setQuickNote(e.target.value)}
-              placeholder="e.g. no onion, less spicy..."
-              className="w-full border border-gray-300 rounded-lg p-2 h-24 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
-            />
-
-            {/* Buttons */}
-
-            <div className="flex justify-between items-center mt-5 gap-3">
-              {/* Cancel */}
-              <button
-                onClick={() => { setSimpleNoteOpen(false); setQuickNote(""); }}
-                className=" border border-gray-300 hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition"
-              >
-                <IoClose />
-              </button>
-
-              {/* Add to cart */}
-              <div className="">
-                <CartButtonAdd
+                {/* ADD TO CART - EXISTING LOGIC */}
+                <CartButtonAddINDE
                   cartProduct={{
                     ...cartProduct,
-                    note: quickNote,
-                    uniqueKey: product.id.toString() + "_" + quickNote,
+                    note: "",
+                    uniqueKey: product.id.toString(),
                   }}
                 />
               </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
 
+    {/* VARIANT AND MODIFIER POPUP */}
+    {isOpen && (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-3 backdrop-blur-sm sm:p-4">
+        <div className="flex max-h-[88dvh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-amber-500/30 bg-[#14151a] shadow-[0_20px_70px_rgba(0,0,0,0.65)]">
+          {/* HEADER */}
+          <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-[#191a20] px-4 py-3.5">
+            <div className="min-w-0 pr-3">
+              <p className="mb-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400">
+                Customize your order
+              </p>
+              <h2 className="truncate font-serif text-lg font-bold text-white">
+                {product.name}
+              </h2>
+            </div>
 
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              aria-label="Close modifiers"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#272830] text-slate-200 transition hover:border-amber-500/40 hover:bg-[#33343d] hover:text-amber-300 touch-manipulation"
+            >
+              <IoClose size={21} />
+            </button>
+          </div>
+
+          {/* SCROLLABLE VARIANTS AND MODIFIERS */}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+            {/* VARIANTS */}
+            {productVariants.map((variant) => (
+              <label
+                key={variant.id}
+                onClick={() => setSelectedVariant(variant)}
+                className={`mb-1 flex cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-2.5 transition-colors ${
+                  selectedVariant?.id === variant.id
+                    ? "border-amber-500/50 bg-amber-500/10"
+                    : "border-transparent hover:border-white/10 hover:bg-white/[0.04]"
+                }`}
+              >
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <input
+                    type="radio"
+                    name={`size-${product.id}`}
+                    checked={selectedVariant?.id === variant.id}
+                    onChange={() => setSelectedVariant(variant)}
+                    className="h-4 w-4 accent-amber-500"
+                  />
+
+                  <span className="text-sm font-semibold text-white">
+                    {variant.name}
+                  </span>
+                </div>
+
+                <span className="shrink-0 text-sm font-bold text-amber-300">
+                  {formatCurrencyNumber(variant.price ?? 0)}
+                </span>
+              </label>
+            ))}
+
+            {/* MODIFIERS */}
+            {productModifierGroups.length > 0 && (
+              <div className="mt-4">
+                {productModifierGroups.map((groupData) => (
+                  <div
+                    key={groupData.group.id}
+                    className="mb-3 border-b border-white/10 pb-3 last:border-b-0"
+                  >
+                    {/* MODIFIER GROUP TITLE */}
+                    <p className="text-sm font-bold text-white">
+                      {groupData.group.name}
+                    </p>
+
+                    <p className="mb-2 mt-1 text-xs font-medium text-slate-400">
+                      Min: {groupData.group.minSelection} | Max:{" "}
+                      {groupData.group.maxSelection}
+                    </p>
+
+                    {/* MODIFIER ITEMS */}
+                    {groupData.items.map((item: ModifierItem) => {
+                      const selectedItems =
+                        selectedModifiers[groupData.group.id] || [];
+
+                      const isChecked = selectedItems.some(
+                        (i) => i.id === item.id
+                      );
+
+                      const handleChange = () => {
+                        setSelectedModifiers((prev) => {
+                          const prevItems =
+                            prev[groupData.group.id] || [];
+
+                          let updated = [...prevItems];
+
+                          if (groupData.group.maxSelection === 1) {
+                            updated = isChecked ? [] : [item];
+                          } else {
+                            const exists = prevItems.some(
+                              (i) => i.id === item.id
+                            );
+
+                            if (exists) {
+                              updated = prevItems.filter(
+                                (i) => i.id !== item.id
+                              );
+                            } else if (
+                              prevItems.length <
+                              groupData.group.maxSelection
+                            ) {
+                              updated.push(item);
+                            }
+                          }
+
+                          return {
+                            ...prev,
+                            [groupData.group.id]: updated,
+                          };
+                        });
+                      };
+
+                      return (
+                        <label
+                          key={item.id}
+                          className={`flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-lg px-2.5 py-2 transition-colors ${
+                            isChecked
+                              ? "bg-amber-500/10"
+                              : "hover:bg-white/[0.04]"
+                          }`}
+                        >
+                          <span className="min-w-0 flex-1 text-sm font-medium text-slate-200">
+                            {item.name}
+                          </span>
+
+                          <div className="flex shrink-0 items-center gap-2.5">
+                            <span className="text-sm font-bold text-amber-300">
+                              +{formatCurrencyNumber(item.price ?? 0)}
+                            </span>
+
+                            <input
+                              type={
+                                groupData.group.maxSelection === 1
+                                  ? "radio"
+                                  : "checkbox"
+                              }
+                              name={`modifier-${groupData.group.id}`}
+                              checked={isChecked}
+                              onChange={handleChange}
+                              className="h-4 w-4 accent-amber-500"
+                            />
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* FIXED FOOTER */}
+          <div className="shrink-0 border-t border-amber-500/20 bg-[#191a20] px-4 pb-3 pt-3">
+            {/* NOTE INPUT */}
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-slate-100">
+                Add Note <span className="font-normal text-slate-400">(optional)</span>
+              </label>
+
+              <textarea
+                value={popupNote}
+                onChange={(e) => setPopupNote(e.target.value)}
+                placeholder="e.g. less spicy, no onion..."
+                className="w-full resize-none rounded-xl border border-white/15 bg-[#0c0d10] p-2.5 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/60 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                rows={2}
+              />
+            </div>
+
+            {/* TOTAL */}
+            <div className="mt-3 flex items-center justify-between rounded-lg border border-amber-500/20 bg-amber-500/[0.07] px-3 py-2">
+              <span className="text-sm font-semibold text-slate-200">
+                Total
+              </span>
+              <span className="text-lg font-extrabold text-amber-300">
+                {formatCurrencyNumber(finalPrice)}
+              </span>
+            </div>
+
+            {/* ACTIONS */}
+            <div className="my-3 flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                aria-label="Close popup"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-[#272830] text-slate-200 transition hover:bg-[#33343d] hover:text-amber-300 touch-manipulation"
+              >
+                <IoClose size={21} />
+              </button>
+
+              <div className="min-w-0 flex-1">
+                <CompositCatButton
+                  selectQuantity
+                  onAdded={() => setIsOpen(false)}
+                  cartProduct={{
+                    id: selectedVariant?.id ?? product.id,
+                    uniqueKey: uniqueKey,
+                    price: finalPrice,
+                    basePrice: selectedVariant?.price ?? product.price ?? 0,
+                    name: selectedVariant?.name ?? product.name,
+                    quantity: 1,
+                    currentStock:
+                      selectedVariant?.currentStock ?? product.currentStock!,
+                    image: product.image,
+                    categoryId: product.categoryId,
+                    productCat: product.productCat!,
+                    taxRate: selectedProduct.taxRate,
+                    taxType: selectedProduct.taxType,
+                    parentProductId: product.id,
+                    modifiers: Object.values(selectedModifiers).flat(),
+                    note: popupNote,
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
-      )
-    }
+      </div>
+    )}
 
+    {/* QUICK NOTE POPUP */}
+    {simpleNoteOpen && (
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+        <div className="w-full max-w-[350px] rounded-2xl border border-amber-500/25 bg-[#14151a] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+          {/* TITLE */}
+          <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400">
+            Special request
+          </p>
 
+          <h2 className="mb-4 break-words font-serif text-lg font-bold text-white">
+            {product.name}
+          </h2>
 
+          {/* TEXTAREA */}
+          <textarea
+            value={quickNote}
+            onChange={(e) => setQuickNote(e.target.value)}
+            placeholder="e.g. no onion, less spicy..."
+            className="h-24 w-full resize-none rounded-xl border border-white/15 bg-[#0c0d10] p-3 text-sm text-white placeholder:text-slate-500 focus:border-amber-500/60 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+          />
 
+          {/* BUTTONS */}
+          <div className="mt-5 flex items-center justify-between gap-3">
+            {/* CANCEL */}
+            <button
+              type="button"
+              onClick={() => {
+                setSimpleNoteOpen(false);
+                setQuickNote("");
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-[#272830] text-slate-200 transition hover:bg-[#33343d] hover:text-amber-300 touch-manipulation"
+              aria-label="Cancel note"
+            >
+              <IoClose size={20} />
+            </button>
+
+            {/* ADD TO CART - EXISTING LOGIC */}
+            <div className="min-w-0 flex-1">
+              <CartButtonAdd
+                cartProduct={{
+                  ...cartProduct,
+                  note: quickNote,
+                  uniqueKey: product.id.toString() + "_" + quickNote,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
   </>
-  );
+);
+
 }
