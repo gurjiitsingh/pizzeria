@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import {   ShoppingBag } from "lucide-react";
 
 import { UseSiteContext } from "@/SiteContext/SiteContext";
-import Navbar from "@/components/level-2/Navbar";
+ 
 import Login from "../../components/buttons/Login";
-import { LanguageSwitcher } from "../../languages/LanguageSwitcher";
-import Cart from "./cart";
+ 
+ 
 import UserAccountMenu from "@/app/user/components/UserAccountMenu";
+import Navbar from "../menu/Navbar";
 
 
 export const headerFlags = {

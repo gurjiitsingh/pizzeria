@@ -3,12 +3,20 @@
 import { Suspense } from "react";
 //import AOSInit from "@/components/AOSInit";
 
-import HeroSectionCustom from "@/custom/cus-components/HeroSectionCustom";
-import CategorySliderLight from "@/components/level-1/CategorySliderLight";
-import Products from "@/components/level-1/Products";
+  
+// import CategorySliderLight from "@/components/level-1/CategorySliderLight";
+// import Products from "@/components/level-1/Products";
 import BestOfMonth from "@/custom/cus-components/BestOfMonth";
-import ContactInfoWrapper from "@/components/ContactInfoWrapper";
+//import ContactInfoWrapper from "@/components/ContactInfoWrapper";
 import ProductsWrapper from "@/components/ProductsWrapper";
+
+
+// import BestOfMonth from "@/custom/slider/BestOfMonth";
+  import ContactInfoWrapper from "@/custom/cus-com/ContactInfoWrapper";
+// import ProductsWrapper from "@/components/ProductsWrapper";
+ import CategorySlider from "@/custom/slider/CategorySliderLight";
+import HeroSectionCustom from "@/custom/cus-com/HeroSectionCustom";
+import CategorySliderLight from "@/custom/slider/CategorySliderLight";
 
 export default function Page() {
   return (

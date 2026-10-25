@@ -6,7 +6,8 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
-import ProductCardPrductOfMonth from "../../components/level-2/ProductCardPOM";
+import ProductCardPrductOfMonth from "./ProductCardPOM";
+ 
 
 export default function BestOfMonth() {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);

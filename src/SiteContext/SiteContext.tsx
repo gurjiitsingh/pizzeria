@@ -10,7 +10,7 @@ type SiteContextType = {
   allProduct: ProductType[];
   setAllProduct: (e: ProductType[]) => void;
   productToSearchQuery: string;
-setProductToSearchQuery: (e: string) => void;
+  setProductToSearchQuery: (e: string) => void;
   // handleSearchForm: (e: string) => void;
   // setHandleSearchForm: (fn: (e: string) => void) => void;
   newOrderCondition: boolean;
@@ -37,7 +37,11 @@ setProductToSearchQuery: (e: string) => void;
   setAdminSideBarToggleG: (e: boolean) => void;
   setCustomerEmailG: (e: string) => void;
   customerEmail: string;
+  setCustomerData: (e: string) => void;
+  customerData: string;
+
   setCustomerAddressIsComplete: (e: boolean) => void;
+
   customerAddressIsComplete: boolean;
   productCategoryIdG: string;
   setProductCategoryIdG: (e: string) => void;
@@ -46,13 +50,15 @@ setProductToSearchQuery: (e: string) => void;
   disablePickupCatDiscountIds: string[];
   setDisablePickupCatDiscountIds: (e: string[]) => void;
   settings: SettingsDataType;
+  isStoreOpen: boolean | null;
+  setIsStoreOpen: (value: boolean | null) => void;
 };
 
 const SiteContext = createContext<SiteContextType>({
   allProduct: [],
   setAllProduct: (e: ProductType[]) => e,
   productToSearchQuery: "",
-setProductToSearchQuery: (e: string) => e,
+  setProductToSearchQuery: (e: string) => e,
   // handleSearchForm: (e: string) => {},
   // setHandleSearchForm: (fn: (e: string) => void) => {},
   paymentType: "",
@@ -69,9 +75,9 @@ setProductToSearchQuery: (e: string) => e,
   },
   open: false,
   deliveryType: "pickup",
-  sideBarToggle: () => {},
+  sideBarToggle: () => { },
   openBargerMenu: false,
-  bargerMenuToggle: () => {},
+  bargerMenuToggle: () => { },
   openEmailForm: false,
   emailFormToggle: (e) => {
     return e;
@@ -90,7 +96,7 @@ setProductToSearchQuery: (e: string) => e,
     startDate: "",
     createdAt: undefined,
     date: "",
-    message:"",
+    message: "",
   },
 
   setCouponDisc: (e) => {
@@ -124,10 +130,15 @@ setProductToSearchQuery: (e: string) => e,
   setCustomerEmailG: (e) => {
     return e;
   },
+  setCustomerData: (e) => {
+    return e;
+  },
   customerEmail: "",
   setCustomerAddressIsComplete: (e) => {
     return e;
   },
+  customerData: "",
+
   customerAddressIsComplete: false,
   productCategoryIdG: "",
   setProductCategoryIdG: (e) => {
@@ -140,6 +151,8 @@ setProductToSearchQuery: (e: string) => e,
   },
 
   settings: {},
+  isStoreOpen: null,
+  setIsStoreOpen: () => { },
 });
 
 export const UseSiteContext = () => {
