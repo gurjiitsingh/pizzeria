@@ -14,6 +14,7 @@ import { IoClose } from "react-icons/io5";
 
 import CartButtonAddINDE from "@/custom/CartBottom/CartButtonAddINDE";
 import CompositCatButton from "@/custom/CartBottom/CompositCatButton";
+import CartButtonAdd from "../CartBottom/CartButtonAdd";
 export default function ProductCardHorizontical({
   product,
   variants,

@@ -7,7 +7,8 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import { Chicle } from "next/font/google";
-import ProductCardPrductOfMonth from "../../components/level-2/ProductCardPOM";
+import ProductCardPrductOfMonth from "../slider/ProductCardPOM";
+// import ProductCardPrductOfMonth from "../../components/level-2/ProductCardPOM";
 
 const chicle = Chicle({ subsets: ["latin"], weight: "400" });
 

@@ -3,7 +3,8 @@
 import { IoCartOutline } from "react-icons/io5";
  
 import { UseSiteContext } from "@/SiteContext/SiteContext";
-import CartCount from "@/components/CartBottom/CartCount";
+import CartCount from "../CartBottom/CartCount";
+// import CartCount from "@/components/CartBottom/CartCount";
 
 const Cart = () => {
   const { sideBarToggle } = UseSiteContext();

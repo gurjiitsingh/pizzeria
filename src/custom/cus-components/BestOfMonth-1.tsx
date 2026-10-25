@@ -13,7 +13,8 @@ import {
 import {  Chicle } from "next/font/google";
 
 import { Cinzel, Lato, Roboto, Poppins } from "next/font/google";
-import ProductCardPrductOfMonth from "../../components/level-2/ProductCardPOM";
+import ProductCardPrductOfMonth from "../slider/ProductCardPOM";
+// import ProductCardPrductOfMonth from "../../components/level-2/ProductCardPOM";
 
 const lato = Lato({
   subsets: ["latin"],
