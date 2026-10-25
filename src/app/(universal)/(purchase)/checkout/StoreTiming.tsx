@@ -1,14 +1,12 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import   { Suspense, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 import PaymentSelector from "./components/PaymentSelector";
 import OrderTypeSelector from "@/components/OrderTypeSelector";
-import OrderSummeryProcess from "./components/Cart/OrderSummeryProcess";
-
 import { DaySchedule } from "@/lib/types/daySchedule";
-import AddressWrapper from "@/custom/address/AddressWrapper";
+import { UseSiteContext } from "@/SiteContext/SiteContext";
 
 const ENABLE_ORDER_SCHEDULE =
   process.env.NEXT_PUBLIC_ENABLE_ORDER_SCHEDULE === "true";
@@ -29,29 +27,26 @@ type Props = {
 
 const Scheduler = ({ weeklySchedule }: Props) => {
   const [mounted, setMounted] = useState(false);
-  const [isStoreOpen, setIsStoreOpen] = useState(false);
+  // const [isStoreOpen, setIsStoreOpen] = useState(false);
+ 
   const [orderType, setOrderType] = useState<"instant" | "schedule" | null>(
     null
   );
   const [scheduledAt, setScheduledAt] = useState<string | null>(null);
-
+const { isStoreOpen, setIsStoreOpen } = UseSiteContext();
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
+useEffect(() => {
+  if (!mounted || isStoreOpen === null) return;
 
-    if (!isStoreOpen) {
-      setOrderType("schedule");
-    } else {
-      setOrderType(null);
-    }
-  }, [isStoreOpen, mounted]);
+  setOrderType(isStoreOpen ? "instant" : "schedule");
+}, [isStoreOpen, mounted]);
 
   // ✅ CRITICAL: prevent hydration mismatch
   if (!mounted) return null;
-console.log("INSIDE CHECK OUT-----------------------")
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div translate="no" className="bg-white flex flex-col mt-10">
@@ -61,15 +56,19 @@ console.log("INSIDE CHECK OUT-----------------------")
 
             {ENABLE_ORDER_SCHEDULE && (
               <>
-                <StoreOpenStatus onStatusChange={setIsStoreOpen} />
+             <StoreOpenStatus
+  onStatusChange={(open) => setIsStoreOpen(open)}
+/>
 
-                <OrderTypeSelector
-                  isStoreOpen={isStoreOpen}
-                  onSelect={setOrderType}
-                />
+{isStoreOpen !== null && (
+  <OrderTypeSelector
+    isStoreOpen={isStoreOpen}
+    onSelect={setOrderType}
+  />
+)}
 
                 {orderType === "instant" && (
-                  <div className="mt-3 px-3 py-2 rounded-md border border-green-100 bg-green-50 text-xs text-green-700">
+                  <div>
                     Your order will be prepared in 30–45 minutes.
                   </div>
                 )}
@@ -83,11 +82,11 @@ console.log("INSIDE CHECK OUT-----------------------")
               </>
             )}
 
-           
-         
+
+
           </div>
 
-         
+
         </div>
       </div>
     </Suspense>

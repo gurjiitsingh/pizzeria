@@ -92,7 +92,7 @@ const Header = () => {
           <Link href="/" className="flex items-center gap-3">
             <div
               className="
-                flex h-11 w-11 items-center justify-center
+                flex h-9 w-9 items-center justify-center
                 rounded-2xl
                 bg-orange-500
                 text-white

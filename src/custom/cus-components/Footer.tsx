@@ -228,17 +228,17 @@ export default function Footer({ outlet }: Props) {
                   />
                 </div>
 
-                <div>
-                  <div
-                    className={`${fontPrice.className} text-xl font-bold tracking-tight text-white`}
-                  >
-                    {fallbackBrand.brand_name}
-                  </div>
+          <div className="flex flex-col items-center text-center">
+  <div
+    className={`${fontPrice.className} text-xl font-bold tracking-tight text-white`}
+  >
+    {fallbackBrand.brand_name}
+  </div>
 
-                  <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/40">
-                    Fresh food · Happy mood
-                  </div>
-                </div>
+  <div className="mt-1 text-[9px] font-semibold uppercase tracking-[0.22em] text-white/40">
+    Fresh food · Happy mood
+  </div>
+</div>
               </div>
             </Link>
 

@@ -55,7 +55,7 @@ const CartButtonAddINDE = ({ cartProduct }: { cartProduct: cartProductType }) =>
                 <>
                   <button
                     onClick={addToCartL}
-                    className="px-2 py-2 rounded-lg bg-white  flex items-center justify-center"
+                    className="px-2 py-2 rounded-lg bg-white  flex items-center justify-center" 
                   >
                     <IoMdAdd size={16} className="text-[#373535]" />
                   </button>
@@ -68,7 +68,7 @@ const CartButtonAddINDE = ({ cartProduct }: { cartProduct: cartProductType }) =>
             <div className="bg-[#F3F2F0] px-[3px] pt-[1px] pb-[3px]  rounded-lg">
               <button
                 onClick={addToCartL}
-                className=" w-[70px] px-1 py-1 rounded-lg bg-white font-bold text-gray-400  flex items-center justify-center"
+                 className="min-h-9 min-w-[76px] shrink-0 rounded-lg border border-amber-400/50 bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-sm font-extrabold text-[#17120a] shadow-sm transition hover:from-amber-300 hover:to-orange-400 active:scale-[0.97] touch-manipulation"
               >
                 Add
               </button>

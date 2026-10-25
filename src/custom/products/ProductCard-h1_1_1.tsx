@@ -225,7 +225,7 @@ return (
                   </span>
                 )}
               </div>
-
+   <div className="bg-[#F3F2F0] px-[3px] pt-[1px] pb-[3px]  rounded-lg">
               <button
                 type="button"
                 onClick={() => setIsOpen(true)}
@@ -233,6 +233,7 @@ return (
               >
                 Add +
               </button>
+              </div>
             </div>
           ) : (
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
