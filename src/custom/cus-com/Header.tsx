@@ -103,7 +103,7 @@ const Header = () => {
             </div>
 
             <div>
-              <div className="text-xl font-black tracking-tight text-slate-900">
+              <div className="text-xl font-black tracking-tight text-slate-400">
                 Pizzeria
               </div>
 
