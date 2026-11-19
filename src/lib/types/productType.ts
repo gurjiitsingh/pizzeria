@@ -26,6 +26,7 @@ export type ProductType = {
   name: string;
   price: number;
   quantity: number | null;
+  taxCategory: string | null;
    discountEligible?: boolean;
   discountPrice: number | undefined;
   categoryId: string;
@@ -39,7 +40,7 @@ export type ProductType = {
    images?: ProductImageType[];
    options?: ProductOptionType[];
   isFeatured: boolean;
-favorite:boolean;
+  favorite:boolean;
   flavors?: boolean;
   publishStatus: 'published' | 'draft';
   stockStatus: 'in_stock' | 'out_of_stock';
@@ -49,6 +50,9 @@ favorite:boolean;
   // NEW FIELDS
   taxRate: number | undefined;
   taxType: 'inclusive' | 'exclusive' | undefined;
+
+   taxRate1: number | undefined;
+  taxType1: 'inclusive' | 'exclusive' | undefined;
 
   parentId?: string;
   hasVariants?: boolean;
@@ -92,6 +96,7 @@ export const newProductSchema = z.object({
 
   name: z.string().min(1, { message: "Product name is required" }),
 
+taxCategory: z.string().optional().default("FOOD_GST"),
   price: z
     .union([z.string(), z.number()])
     .refine((val) => {
@@ -174,6 +179,21 @@ masterCategoryId: z.string().optional(),
     ),
 
   taxType: z.enum(["inclusive", "exclusive"]).optional(),
+
+  taxRate1: z
+    .union([z.string(), z.number()])
+    .optional()
+    .transform((val) =>
+      val === undefined || val === ""
+        ? undefined
+        : Number(val.toString().replace(",", "."))
+    )
+    .refine(
+      (val) => val === undefined || (!isNaN(val) && val >= 0),
+      { message: "Invalid tax rate" }
+    ),
+
+  taxType1: z.enum(["inclusive", "exclusive"]).optional(),
 });
 
 
@@ -264,6 +284,18 @@ export const editProductSchema = z.object({
     ),
 
   taxType: z
+    .enum(["inclusive", "exclusive"])
+    .optional(),
+
+    taxRate1: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || /^\d*[.,]?\d*$/.test(value),
+      "Invalid tax rate"
+    ),
+
+  taxType1: z
     .enum(["inclusive", "exclusive"])
     .optional(),
 });
