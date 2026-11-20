@@ -1,3 +1,4 @@
+"use server"
 
 import { auth } from "@/auth";
 import AddressES from "./AddressES";
@@ -12,7 +13,7 @@ export default async function AddressWrapper() {
  
 
   if (role !== "user" || !userId) {
-    return <AddressES />;
+    return <div className="text-2xl">Please Login as customer</div>;
   }
 
   const addresses = await getCustomerAddresses(userId);
